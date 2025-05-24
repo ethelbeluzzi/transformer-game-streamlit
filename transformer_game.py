@@ -20,20 +20,29 @@ def init_state():
 init_state()
 
 # --- Logs de Feedback ---
-import requests
+from github import Github
 import datetime
-
-GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyddJpUamCosCP43TtS9I1bNWW-aOkyMrI2JD3RDV3Ny-rVLgUC24STdwNwRimDtClbpA/exec"  # ← substitua com sua URL
+import streamlit as st
 
 def log_feedback(feedback_text):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    full_text = f"[{timestamp}] {feedback_text}\n"
+
+    token = st.secrets["GITHUB_TOKEN"]
+    repo_name = st.secrets["REPO_NAME"]
+    file_path = st.secrets["FILE_PATH"]
+
+    g = Github(token)
+    repo = g.get_repo(repo_name)
+
     try:
-        requests.post(GOOGLE_SHEETS_WEBHOOK_URL, data={
-            "feedback": f"[{timestamp}] {feedback_text}"
-        })
-        st.success("✅ Seu feedback foi registrado com sucesso na planilha!")
-    except Exception as e:
-        st.error("❌ Erro ao enviar feedback. Verifique a conexão com o webhook.")
+        contents = repo.get_contents(file_path)
+        new_content = contents.decoded_content.decode() + full_text
+        repo.update_file(file_path, "append feedback", new_content, contents.sha)
+    except Exception:
+        repo.create_file(file_path, "create feedback log", full_text)
+
+    st.success("✅ Feedback salvo com sucesso no repositório privado!")
 
 # --- Função lateral de bug/sugestão ---
 def report_bug_section():
