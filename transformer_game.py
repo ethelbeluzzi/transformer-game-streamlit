@@ -147,34 +147,51 @@ def phase3_multi_head_attention():
 
     foco = st.selectbox("Palavra de foco (query)", frase, key="p3_query")
 
-    padroes = {
-        "O": ["modelo", "aprende"],
+    padroes_cabeca1 = {
+        "O": ["modelo"],
         "modelo": ["O", "aprende"],
-        "aprende": ["modelo", "relações"],
-        "relações": ["tokens", "entre"],
-        "entre": ["tokens", "relações"],
-        "tokens": ["relações", "entre"]
+        "aprende": ["modelo"],
+        "relações": ["entre"],
+        "entre": ["relações"],
+        "tokens": ["entre"]
     }
 
-    st.markdown("🔎 **Cabeça 1** (posição): tende a olhar para palavras próximas da query.")
-    st.markdown("🔎 **Cabeça 2** (concordância estrutural): foca em ligações verbais e dependência.")
-    st.markdown("🔎 **Cabeça 3** (semântica latente): busca palavras semanticamente próximas.")
+    padroes_cabeca2 = {
+        "O": ["aprende"],
+        "modelo": ["relações"],
+        "aprende": ["tokens"],
+        "relações": ["modelo"],
+        "entre": ["aprende"],
+        "tokens": ["O"]
+    }
+
+    padroes_cabeca3 = {
+        "O": ["O"],
+        "modelo": ["tokens"],
+        "aprende": ["relações"],
+        "relações": ["tokens"],
+        "entre": ["modelo"],
+        "tokens": ["relações"]
+    }
+
+    st.markdown("🔎 **Cabeça 1** (posição local): tende a olhar para palavras vizinhas da query.")
+    st.markdown("🔎 **Cabeça 2** (ligação estrutural): pode conectar palavras com dependência gramatical.")
+    st.markdown("🔎 **Cabeça 3** (semântica implícita): pode focar em termos semanticamente relacionados.")
 
     st.markdown("---")
     st.markdown(f"🧠 Com foco em **{foco}**, veja como cada cabeça pode responder:")
 
-    st.write(f"**Cabeça 1:** Atenção distribuída para: {', '.join(padroes.get(foco, []))}")
-    st.write(f"**Cabeça 2:** Atenção distribuída para: {', '.join(padroes.get(foco, [])[::-1])}")
-    st.write(f"**Cabeça 3:** Atenção distribuída para: {', '.join(padroes.get(foco, [])) if foco in padroes else 'nenhuma palavra associada'}")
+    st.write(f"**Cabeça 1:** Atenção distribuída para: {', '.join(padroes_cabeca1.get(foco, [])) or 'nenhuma palavra associada'}")
+    st.write(f"**Cabeça 2:** Atenção distribuída para: {', '.join(padroes_cabeca2.get(foco, [])) or 'nenhuma palavra associada'}")
+    st.write(f"**Cabeça 3:** Atenção distribuída para: {', '.join(padroes_cabeca3.get(foco, [])) or 'nenhuma palavra associada'}")
 
-    st.success("✅ Não há resposta certa ou errada. O importante é entender que diferentes cabeças focam em padrões distintos simultaneamente.")
+    st.success("✅ Observe como diferentes cabeças focam em padrões distintos — essa diversidade é fundamental para a riqueza das representações geradas pelo Transformer.")
 
     if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"):
         st.session_state.game_state = "phase4"
         st.rerun()
 
     report_bug_section()
-
 # --- Fase 4 ---
 def phase4_positional_encoding():
     st.header("Fase 4: Corrida com Codificação Posicional 📍")
