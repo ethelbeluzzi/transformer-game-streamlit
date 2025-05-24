@@ -2,14 +2,18 @@ import streamlit as st
 import time
 import datetime
 import os
+import numpy as np
+import matplotlib.pyplot as plt
+import requests
 
 # --- Inicialização de Estado ---
 def init_state():
     st.session_state.setdefault("game_state", "menu")
-    st.session_state.setdefault("phase1_passed", False)
-    st.session_state.setdefault("phase2_passed", False)
-    st.session_state.setdefault("phase3_passed", False)
-    st.session_state.setdefault("phase4_passed", False)
+    for key in [
+        "phase1_passed", "phase2_passed", "phase3_passed", "phase4_passed",
+        "show_phase1_feedback", "show_phase2_feedback", "show_phase3_feedback", "show_phase4_feedback"
+    ]:
+        st.session_state.setdefault(key, False)
     for key in ["p1_attempts", "p2_attempts", "p3_attempts", "p4_attempts"]:
         st.session_state.setdefault(key, 0)
 
@@ -39,147 +43,227 @@ def report_bug_section():
             else:
                 st.sidebar.warning("Por favor, escreva algo antes de enviar.")
 
-# --- Fase 1 ---
+# --- Fase 1: Mini-game de Montagem do Transformer ---
 def phase1_architecture():
     st.header("Fase 1: A Arquitetura Fundacional (Encoder-Decoder) 🏗️")
-    st.write("Antes do Transformer, os modelos mais comuns para lidar com dados sequenciais eram as redes neurais recorrentes (RNNs) e convolucionais (CNNs). No entanto, ambos possuem limitações sérias quando se trata de capturar dependências de longo prazo em sequências e realizar o treinamento de forma paralela. O Transformer revoluciona essa abordagem ao eliminar completamente a necessidade de recorrência ou convolução, confiando exclusivamente no mecanismo de atenção.")
+    st.write("Arraste os blocos abaixo para a ordem correta da arquitetura Transformer: de entrada até a saída.")
 
-    with st.expander("🤔 O que é Encoder-Decoder?"):
-        st.write("Essa arquitetura é composta por duas partes principais: o codificador (encoder), que processa a entrada e gera uma representação interna (vetor de contexto), e o decodificador (decoder), que utiliza essa representação para gerar uma saída. Em tarefas como tradução automática, o encoder lê a frase em uma língua e o decoder gera a tradução na outra língua.")
+    componentes = [
+        "Embedding", "Encoder", "Mecanismo de Atenção", "Decoder", "Camada de Saída"
+    ]
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("Redes Recorrentes Complexas 🔄", key="p1_btn_rnn"):
-            st.error("❌ Resposta incorreta! As RNNs são difíceis de treinar para sequências longas e têm limitações de paralelização.")
-            st.session_state.p1_attempts += 1
-    with col2:
-        if st.button("Redes Convolucionais 🖼️", key="p1_btn_cnn"):
-            st.warning("⚠️ Parcialmente correto. As CNNs oferecem alguma paralelização, mas não capturam dependências de longo prazo de maneira eficiente.")
-            st.session_state.p1_attempts += 1
-    with col3:
-        if st.button("Atenção Pura (Transformer) ✨", key="p1_btn_attention"):
+    ordem_correta = [
+        "Embedding", "Encoder", "Mecanismo de Atenção", "Decoder", "Camada de Saída"
+    ]
+
+    escolhas = []
+    for i in range(len(ordem_correta)):
+        escolha = st.selectbox(f"Posição {i + 1}", ["⬇️ Escolha"] + componentes, key=f"fase1_{i}")
+        escolhas.append(escolha)
+
+    if st.button("Verificar Ordem"):
+        if escolhas == ordem_correta:
             st.session_state.phase1_passed = True
+            st.session_state.show_phase1_feedback = True
             st.rerun()
+        else:
+            st.error("❌ Ainda não está certo! Tente organizar os blocos na sequência lógica.")
 
-    if st.session_state.phase1_passed:
-        st.success("✅ Correto! O Transformer utiliza atenção pura — sem RNNs nem CNNs.")
-        st.write("O Transformer usa pilhas de atenção e feedforward em blocos separados para codificação e decodificação, o que permite paralelização total e melhor desempenho.")
-        st.image("img/transformer.png", width=300, caption="Diagrama da arquitetura do Transformer")
+    if st.session_state.get("show_phase1_feedback", False):
+        st.success("✅ Correto! Essa é a ordem de processamento do Transformer.")
+        st.image("img/transformer.png", width=300, caption="Arquitetura do Transformer: Encoder-Decoder com Atenção")
         if st.button("Avançar para Fase 2 ➡️", key="p1_advance_button"):
             st.session_state.game_state = "phase2"
+            st.session_state.show_phase1_feedback = False
             st.rerun()
 
     report_bug_section()
 
 # --- Fase 2 ---
 def phase2_scaled_dot_product_attention():
-    st.header("Fase 2: Atenção Escalonada por Produto Escalar (Scaled Dot-Product Attention) 🎯")
-    st.write("O mecanismo de atenção calcula a relevância entre elementos de uma sequência com base em vetores de consulta (query), chave (key) e valor (value). A versão escalonada melhora a estabilidade do treinamento ao dividir o produto escalar QK pela raiz quadrada da dimensão das chaves (\u221ad_k), evitando que a função softmax sature com valores muito grandes.")
+    st.header("Fase 2: Corrida de Vetores e Escalonamento 🎯")
+    st.write("Nesta fase, você verá como o escalonamento evita que o softmax fique saturado durante o cálculo de atenção.")
+    st.write("Imagine que os vetores Q e K estão correndo. Se a velocidade (produto escalar) for muito alta, o softmax satura.")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Aumentar magnitude dos produtos", key="p2_wrong"):
-            st.error("❌ Incorreto! Isso pioraria o problema da saturação no softmax.")
-            st.session_state.p2_attempts += 1
-    with col2:
-        if st.button("Evitar gradientes pequenos no softmax ✅", key="p2_correct"):
-            st.session_state.phase2_passed = True
-            st.rerun()
+    st.subheader("Velocidade dos vetores:")
+    q_val = st.slider("Valor do vetor Q", 1, 100, 60, step=1)
+    k_val = st.slider("Valor do vetor K", 1, 100, 80, step=1)
+    d_k = st.slider("Dimensão d_k (escalonador)", 1, 100, 64, step=1)
 
-    if st.session_state.phase2_passed:
-        st.success("✅ Correto! Escalar por \u221ad_k estabiliza os gradientes da atenção.")
-        st.write("Isso garante que os pesos da atenção distribuídos pelo softmax fiquem em uma faixa útil para o aprendizado.")
+    produto = q_val * k_val
+    sem_escalonar = produto
+    com_escalonamento = produto / (d_k ** 0.5)
+
+    st.markdown(f"**Produto Escalar (Q·K):** `{sem_escalonar}`")
+    st.markdown(f"**Após escalonamento (÷ √d_k):** `{com_escalonamento:.2f}`")
+
+    if com_escalonamento < 30:
+        st.success("✅ Correto! O valor foi escalonado para evitar saturação do softmax.")
         if st.button("Avançar para Fase 3 ➡️", key="p2_advance_button"):
             st.session_state.game_state = "phase3"
             st.rerun()
+    else:
+        st.warning("⚠️ O valor ainda está alto. Tente reduzir Q, K ou aumentar d_k.")
 
     report_bug_section()
 
 # --- Fase 3 ---
 def phase3_multi_head_attention():
-    st.header("Fase 3: Atenção Multi-Cabeça (Multi-Head Attention) 💡")
-    st.write("A atenção multi-cabeça divide as representações em subespaços menores e aplica atenção separada a cada um deles. Isso permite que o modelo aprenda diferentes tipos de relacionamentos simultaneamente (por exemplo: proximidade sintática, associação semântica etc.), melhorando a expressividade do modelo.")
+    st.header("Fase 3: Cobrinha Multi-Cabeça 🐍")
+    st.write("Neste mini-jogo, você vai entender como diferentes 'cabeças' de atenção podem focar em diferentes partes da entrada.")
+    st.write("Cada cabeça deve capturar um tipo de informação em uma frase simplificada.")
 
-    d_val = st.slider("Escolha d_k/d_v por cabeça (esperado: 64)", 32, 128, 64, step=32)
-    if d_val == 64:
-        st.session_state.phase3_passed = True
-        st.rerun()
-    elif 'p3_attempts' in st.session_state:
-        st.session_state.p3_attempts += 1
+    palavras = ["João", "correu", "até", "a", "loja"]
+    opcoes = ["sintaxe", "semântica", "posição"]
 
-    if st.session_state.phase3_passed:
-        st.success("✅ Correto! Com d_model=512 e 8 cabeças, temos d_k = d_v = 64 por cabeça.")
-        st.write("Isso mantém o custo computacional comparável ao de uma única cabeça com d_model completo.")
-        if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"):
-            st.session_state.game_state = "phase4"
-            st.rerun()
+    colunas = st.columns(len(palavras))
+    atribuicoes = []
+    for i in range(len(palavras)):
+        with colunas[i]:
+            escolha = st.selectbox(f"'{palavras[i]}'", ["--"] + opcoes, key=f"fase3_{i}")
+            atribuicoes.append(escolha)
+
+    if st.button("Verificar Cabeças"):
+        tipos_usados = set(atribuicoes)
+        if all(e in tipos_usados for e in opcoes):
+            st.success("✅ Excelente! Cada cabeça está capturando uma dimensão diferente da frase.")
+            if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"):
+                st.session_state.game_state = "phase4"
+                st.rerun()
+        else:
+            st.warning("⚠️ Tente distribuir as atenções entre sintaxe, semântica e posição para as palavras.")
 
     report_bug_section()
 
 # --- Fase 4 ---
 def phase4_positional_encoding():
-    st.header("Fase 4: Codificação Posicional 📍")
-    st.write("Como o Transformer não possui estrutura sequencial explícita como nas RNNs, ele precisa adicionar manualmente informações sobre a posição dos tokens. Isso é feito somando um vetor de posição ao vetor de embedding de cada palavra. O artigo original usa funções seno e cosseno com diferentes frequências para esse fim.")
+    st.header("Fase 4: Corrida com Codificação Posicional 📍")
+    st.write("Aqui, seu token precisa seguir um caminho com saltos senoidais para escapar dos obstáculos.")
+    st.write("O objetivo é simular o comportamento da codificação posicional seno/cosseno usada no Transformer.")
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("Embeddings aprendidos", key="p4_wrong1"):
-            st.warning("⚠️ Método alternativo possível, mas não o utilizado no artigo original.")
-            st.session_state.p4_attempts += 1
-    with col2:
-        if st.button("Seno e Cosseno ✅", key="p4_correct"):
-            st.session_state.phase4_passed = True
-            st.rerun()
-    with col3:
-        if st.button("Hash de posição", key="p4_wrong2"):
-            st.error("❌ Incorreto. Hashes não preservam relações posicionais.")
-            st.session_state.p4_attempts += 1
+    num_pontos = st.slider("Tamanho da sequência (tokens)", 5, 50, 20)
+    uso_seno = st.radio("Tipo de codificação posicional:", ["Constante", "Linear", "Senoidal"], index=2)
 
-    if st.session_state.phase4_passed:
-        st.success("✅ Correto! As funções trigonométricas garantem generalização para sequências mais longas.")
+    x = np.arange(num_pontos)
+    if uso_seno == "Constante":
+        y = np.ones_like(x)
+    elif uso_seno == "Linear":
+        y = x
+    else:
+        y = np.sin(x / 5)
+
+    fig, ax = plt.subplots()
+    ax.plot(x, y, marker='o')
+    ax.set_title("Caminho da posição na sequência")
+    st.pyplot(fig)
+
+    if uso_seno == "Senoidal":
+        st.success("✅ Correto! Funções seno e cosseno codificam posições relativas no Transformer.")
         if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"):
             st.session_state.game_state = "phase5"
             st.rerun()
+    else:
+        st.warning("⚠️ A codificação correta é senoidal. Tente novamente.")
 
     report_bug_section()
 
 # --- Fase 5 ---
 def phase5_training_results():
-    st.header("Fase 5: Treinamento e Resultados ⚡")
-    st.write("Vamos simular o treinamento do Transformer e observar como ele se compara a modelos anteriores em termos de qualidade de tradução e custo computacional.")
-    progress_bar = st.progress(0)
-    for i in range(100):
-        time.sleep(0.01)
-        progress_bar.progress(i + 1)
-    st.success("✅ Treinamento concluído!")
-    if st.button("Ver Resumo 🏆"):
-        st.session_state.game_state = "summary"
-        st.rerun()
+    st.header("Fase 5: Gerencie seu Treinamento ⚙️")
+    st.write("Nesta fase final, você é responsável por treinar seu Transformer com os melhores parâmetros.")
+    st.write("Faça escolhas que equilibrem desempenho (BLEU score) e custo computacional.")
+
+    modelo = st.selectbox("Tamanho do modelo", ["Pequeno", "Base", "Grande"], index=1)
+    num_cabecas = st.slider("Número de cabeças de atenção", 2, 16, 8)
+    batch_size = st.slider("Tamanho do batch (lote)", 8, 128, 32, step=8)
+
+    if modelo == "Pequeno":
+        base_bleu = 25.0
+        custo = 1.0
+    elif modelo == "Base":
+        base_bleu = 27.3
+        custo = 2.5
+    else:
+        base_bleu = 28.4
+        custo = 5.0
+
+    ajuste = (num_cabecas / 8) * (batch_size / 32)
+    bleu = base_bleu + np.log2(ajuste + 1)
+    custo_total = custo * ajuste
+
+    st.markdown(f"**BLEU estimado:** `{bleu:.2f}`")
+    st.markdown(f"**Custo estimado (FLOPs):** `{custo_total:.2f}` unidades")
+
+    if bleu >= 28.0:
+        st.success("✅ Parabéns! Você otimizou bem seu Transformer.")
+        if st.button("Ver Resumo das Descobertas 🏆"):
+            st.session_state.game_state = "summary"
+            st.rerun()
+    else:
+        st.warning("⚠️ Seu BLEU score ainda pode melhorar. Tente ajustar os parâmetros!")
+
     report_bug_section()
 
-# --- Resumo Final ---
+# --- Resumo Final + LLM ---
 def game_summary():
     st.header("Resumo: Attention Is All You Need 🎉")
-    st.markdown("""
-* Arquitetura baseada exclusivamente em atenção (sem RNNs ou CNNs)  
-* Treinamento altamente paralelizável  
-* Mecanismo de auto-atenção (self-attention)  
-* Produto escalar escalonado (scaled dot-product) para estabilidade  
-* Atenção multi-cabeça (multi-head) para múltiplas perspectivas  
-* Codificação posicional baseada em seno e cosseno  
-* Resultados superiores em tradução automática (BLEU)  
-* Capacidade de generalização para outras tarefas de linguagem natural
-""")
+    st.write("Você concluiu todas as fases e compreendeu os principais pilares da arquitetura Transformer. Veja abaixo um resumo aprofundado, totalmente alinhado ao artigo original de Vaswani et al. (2017):")
+
+    st.markdown(\"\"\"**1. Arquitetura baseada exclusivamente em atenção**  
+O Transformer elimina redes recorrentes (RNNs) e convolucionais (CNNs), usando atenção como base para capturar dependências entre tokens, permitindo paralelismo.
+
+**2. Treinamento altamente paralelizável**  
+Sem processar um token por vez, o modelo acelera o treinamento usando processamento simultâneo em GPUs/TPUs.
+
+**3. Mecanismo de auto-atenção (self-attention)**  
+Cada palavra pondera sua relação com todas as outras da sequência, produzindo uma representação contextual rica.
+
+**4. Produto escalar escalonado**  
+Para evitar saturação da softmax e gradientes instáveis, o produto escalar é dividido por √dₖ.
+
+**5. Atenção multi-cabeça**  
+Múltiplas cabeças processam diferentes subespaços de atenção em paralelo (sintaxe, semântica etc.).
+
+**6. Codificação posicional senoidal**  
+Como não há ordem natural, a posição é codificada usando seno e cosseno de frequências diferentes.
+
+**7. Resultados em BLEU**  
+No WMT 2014, o Transformer superou todos os modelos anteriores com BLEU score 27.3 (base) e 28.4 (big).
+
+**8. Generalização para outras tarefas**  
+Sua estrutura inspirou modelos como BERT, GPT, T5 — aplicados em muitas tarefas de NLP.\"\"\")
+
+    st.markdown("---")
+    st.subheader("❓ Pergunte sobre Transformers")
+    st.write("Use o assistente abaixo para tirar dúvidas sobre o conteúdo do jogo!")
+
+    pergunta = st.text_area("Digite sua pergunta para o modelo Falcon-7B-Instruct:", key="qa_final")
+    if st.button("Responder", key="qa_submit"):
+        if pergunta.strip():
+            with st.spinner("Gerando resposta..."):
+                resposta = requests.post(
+                    "https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct",
+                    json={"inputs": f"Pergunta: {pergunta}\\nResposta:"}
+                )
+                if resposta.status_code == 200:
+                    saida = resposta.json()[0].get("generated_text", "")
+                    st.markdown(saida)
+                else:
+                    st.error("Não foi possível gerar uma resposta agora.")
+        else:
+            st.warning("Digite sua pergunta antes de enviar.")
+
     if st.button("Jogar Novamente 🔁"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
+
     report_bug_section()
 
 # --- Menu Inicial ---
 def main_menu():
     st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀")
-    st.write("Bem-vindo, engenheiro de inteligência artificial! Sua missão é guiar um modelo Transformer por cinco fases de construção e entendimento. Cada fase abordará um conceito essencial do artigo 'Attention Is All You Need'.")
+    st.write("Bem-vindo, engenheiro de inteligência artificial! Sua missão é guiar um modelo Transformer por cinco fases...")
     try:
         st.image("img/transformer.png", width=200)
     except:
