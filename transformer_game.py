@@ -67,10 +67,10 @@ def llm_sidebar_consultation():
         with st.spinner("Consultando a LLM..."):
             try:
                 HF_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-base"
-                hf_token = st.secrets["HF_TOKEN"]
+                hf_token = st.secrets["HF_TOKEN"]  # ✅ nome minúsculo aqui
 
                 headers = {
-                    "Authorization": f"Bearer {HF_TOKEN}",
+                    "Authorization": f"Bearer {hf_token}",  # ✅ corrigido aqui
                     "Content-Type": "application/json"
                 }
 
