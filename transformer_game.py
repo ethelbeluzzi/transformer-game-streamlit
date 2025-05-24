@@ -46,6 +46,18 @@ def report_bug_section():
 # --- Fase 1: Mini-game de Montagem do Transformer ---
 def phase1_architecture():
     st.header("Fase 1: A Arquitetura Fundacional (Encoder-Decoder) 🏗️")
+    
+    st.markdown("""
+📘 **Conceito-chave do artigo**:
+> "Nosso modelo segue a arquitetura geral do transformador como uma pilha de camadas de codificador e decodificador."  
+(Vaswani et al., 2017)
+
+A arquitetura Encoder-Decoder permite que o modelo processe a entrada por completo antes de gerar a saída, otimizando tarefas como tradução, resumo e question answering.
+
+🔬 **Além do artigo**:
+Modelos como T5, BART e muitos sistemas de tradução neural atuais usam variantes dessa arquitetura. Essa separação entre codificação e decodificação facilita transfer learning e modularidade.
+    """)
+
     st.write("Arraste os blocos abaixo para a ordem correta da arquitetura Transformer: de entrada até a saída.")
 
     componentes = [
@@ -54,18 +66,18 @@ def phase1_architecture():
         "Decoder",
         "Encoder",
         "Embedding"
-    ]  # Ordem embaralhada para evitar sugestão direta
+    ]
 
     ordem_correta = [
         "Embedding", "Encoder", "Mecanismo de Atenção", "Decoder", "Camada de Saída"
     ]
 
     dicas = [
-        "Posição 1 - Transforma cada palavra em um vetor numérico compreensível pela IA.",
-        "Posição 2 - Processa a frase de entrada e gera uma representação contextualizada.",
-        "Posição 3 - Decide quais palavras são mais importantes umas para as outras.",
-        "Posição 4 - Gera a frase de saída, com base na atenção e no encoder.",
-        "Posição 5 - Traduz a saída do decoder para palavras compreensíveis."
+        "Posição 1 - **Embedding**: transforma cada palavra em um vetor numérico compreensível pela IA.",
+        "Posição 2 - **Encoder**: processa a frase de entrada e gera uma representação contextualizada.",
+        "Posição 3 - **Mecanismo de Atenção**: decide quais palavras são mais importantes umas para as outras.",
+        "Posição 4 - **Decoder**: gera a frase de saída, com base na atenção e no encoder.",
+        "Posição 5 - **Camada de Saída**: traduz a saída do decoder para palavras compreensíveis."
     ]
 
     escolhas = []
@@ -95,7 +107,17 @@ def phase1_architecture():
 # --- Fase 2 ---
 def phase2_scaled_dot_product_attention():
     st.header("Fase 2: Corrida de Vetores e Escalonamento 🎯")
-    st.write("Vamos entender como a atenção funciona usando vetores. Aqui, você controla os vetores **Q (Query)**, **K (Key)** e o parâmetro **dₖ** (dimensão da chave).")
+
+    st.markdown("""
+📘 **Conceito-chave do artigo**:
+> "Utilizamos atenção por produto escalar escalonado, que é rápida e eficiente em termos de espaço computacional."  
+(Vaswani et al., 2017)
+
+A divisão por √dₖ evita que os valores da softmax se tornem extremos, preservando gradientes úteis para aprendizado.
+
+🔬 **Além do artigo**:
+A atenção escalonada é essencial para o bom funcionamento de grandes modelos como GPT, T5 e BERT. Pequenas variações nesse cálculo afetam o desempenho e a velocidade de convergência — especialmente em tarefas com sentenças longas ou contexto complexo.
+    """)
 
     with st.expander("🤔 O que são Q, K e dₖ?"):
         st.markdown("""
@@ -104,7 +126,9 @@ def phase2_scaled_dot_product_attention():
 - **dₖ (dimensão da chave)**: controla o tamanho dos vetores Q e K. Serve para normalizar o cálculo de similaridade.
 
 O cálculo da atenção é feito assim:
+
 ```Attention(Q, K, V) = softmax(Q·Kᵗ / √dₖ)·V```
+
 Se Q·K for muito grande, a softmax se satura e os gradientes viram quase zero. A divisão por √dₖ evita isso.
         """)
 
@@ -118,27 +142,30 @@ Se Q·K for muito grande, a softmax se satura e os gradientes viram quase zero. 
     st.markdown(f"**Produto Escalar (Q·K):** `{produto}`")
     st.markdown(f"**Escalonado (÷ √dₖ):** `{com_escalonamento:.2f}`")
 
-    if com_escalonamento < 30:
-        st.success("✅ Perfeito! O escalonamento protege a função softmax de saturar, garantindo gradientes estáveis.")
-        st.info("📘 Dica: valores escalonados entre **10 e 30** são ideais. Eles mantêm a softmax funcionando bem: os pesos não ficam extremos e o modelo consegue aprender com eficiência.")
+    if 10 <= com_escalonamento <= 30:
+        st.success("✅ Muito bem! O valor escalonado está em uma faixa ideal para o funcionamento do softmax.")
+        st.info("📘 Dica: valores escalonados entre **10 e 30** mantêm a softmax funcionando bem: os pesos não ficam extremos e o modelo consegue aprender com eficiência.")
         if st.button("Avançar para Fase 3 ➡️", key="p2_advance_button"):
             st.session_state.game_state = "phase3"
             st.rerun()
     else:
-        st.warning("⚠️ O valor escalonado ainda está alto. Isso pode saturar a softmax e impedir o modelo de aprender corretamente. Tente ajustar Q, K ou aumentar dₖ para que o resultado fique entre **10 e 30**.")
+        st.warning("⚠️ O valor escalonado ainda está fora do ideal. Tente ajustar Q, K ou aumentar dₖ para que o resultado fique entre **10 e 30**.")
 
     report_bug_section()
 
 # --- Fase 3 ---
 def phase3_multi_head_attention():
     st.header("Fase 3: Multi-Head Attention: Cabeças Paralelas 🧠")
-    st.write("Nesta fase, você irá visualizar como o modelo Transformer aplica **múltiplas cabeças de atenção** para capturar diferentes relações **sem que essas categorias sejam pré-definidas**. Cada cabeça aprende, de forma autônoma, a focar em diferentes aspectos da sequência.")
 
     st.markdown("""
 📘 **Conceito-chave do artigo**:
-> "Ao invés de realizar uma única atenção com vetores de dimensão d_model, projetamos Q, K, V múltiplas vezes (h cabeças) para subespaços menores, permitindo que o modelo atenda simultaneamente a diferentes informações de diferentes posições." (Vaswani et al., 2017)
+> "É benéfico projetar Q, K, V h vezes com projeções lineares diferentes aprendidas, permitindo que o modelo atenda conjuntamente a informações de diferentes subespaços de representação em diferentes posições."  
+(Vaswani et al., 2017)
 
-👉 Isso quer dizer que **cada cabeça aprende a buscar padrões diferentes**, como: correspondência sujeito-verbo, coocorrência semântica ou dependência de posição — mas o modelo **não classifica isso explicitamente**.
+Cada cabeça de atenção aprende padrões diferentes — como ligações sintáticas, proximidade posicional ou coocorrência semântica — sem que essas categorias sejam pré-definidas.
+
+🔬 **Além do artigo**:
+Essa ideia inspirou arquiteturas como BERT e GPT, onde múltiplas cabeças permitem capturar nuances finas de contexto, ironia, ambiguidade, e relações de dependência a longa distância. Em tarefas como sumarização, tradução e resposta automática, essa diversidade de atenção melhora muito a performance.
     """)
 
     st.subheader("Mini-visualização: como múltiplas cabeças se comportam")
@@ -192,16 +219,20 @@ def phase3_multi_head_attention():
         st.rerun()
 
     report_bug_section()
+
 # --- Fase 4 ---
 def phase4_positional_encoding():
     st.header("Fase 4: A Importância da Posição (Positional Encoding) 📍")
-    st.write("Como o Transformer não possui recorrência ou convolução, ele precisa de uma forma de representar a **ordem das palavras** na sequência. Para isso, adicionamos *codificações posicionais* aos vetores de entrada.")
 
     st.markdown("""
 📘 **Conceito-chave do artigo**:
-> "Como nosso modelo não possui nenhuma recorrência ou convolução, adicionamos informações de posição às embeddings de entrada em todas as camadas de codificador e decodificador." (Vaswani et al., 2017)
+> "Como nosso modelo não possui nenhuma recorrência ou convolução, adicionamos informações de posição às embeddings de entrada em todas as camadas de codificador e decodificador."  
+(Vaswani et al., 2017)
 
-As codificações posicionais são geradas com funções **seno** e **cosseno** de diferentes frequências, permitindo que o modelo distinga tokens por sua posição **e generalize** para sequências maiores que as vistas no treinamento.
+As codificações posicionais são baseadas em funções seno e cosseno de diferentes frequências. Isso permite ao modelo comparar posições relativas mesmo em sequências maiores do que as vistas no treinamento.
+
+🔬 **Além do artigo**:
+A codificação posicional senoidal permite que o modelo funcione mesmo em longos documentos, listas ou código-fonte. Em aplicações como detecção de eventos em séries temporais ou análise de DNA, a posição relativa entre tokens é fundamental.
     """)
 
     st.subheader("Visualização do caminho posicional")
@@ -245,10 +276,20 @@ As codificações posicionais são geradas com funções **seno** e **cosseno** 
 
 # --- Fase 5 ---
 def phase5_training_results():
-    st.header("Fase 5: Gerencie seu Treinamento ⚙️")
-    st.write("Nesta fase final, você é responsável por treinar seu Transformer com os melhores parâmetros.")
-    st.write("Faça escolhas que equilibrem desempenho (BLEU score) e custo computacional.")
+    st.header("Fase 5: Treinamento e Otimização (Resultados e Eficiência) ⚙️")
 
+    st.markdown("""
+📘 **Conceito-chave do artigo**:
+> "O Transformer atinge melhores resultados com menor custo computacional comparado a arquiteturas baseadas em convoluções ou recorrência."  
+(Vaswani et al., 2017)
+
+Com um design inteiramente baseado em atenção e sem dependências sequenciais, o Transformer permite **treinamento paralelizado** e **custo reduzido**, mesmo em grandes volumes de dados.
+
+🔬 **Além do artigo**:
+Essa eficiência transformou o campo da IA. Modelos como GPT, T5 e BERT usam essa arquitetura para serem treinados em escala massiva com clusters de GPUs/TPUs. Ajustar o número de cabeças, o tamanho do modelo e o batch size pode impactar significativamente o custo e a performance do sistema.
+    """)
+
+    st.subheader("Simule o Treinamento do seu Transformer")
     modelo = st.selectbox("Tamanho do modelo", ["Pequeno", "Base", "Grande"], index=1)
     num_cabecas = st.slider("Número de cabeças de atenção", 2, 16, 8)
     batch_size = st.slider("Tamanho do batch (lote)", 8, 128, 32, step=8)
@@ -268,7 +309,7 @@ def phase5_training_results():
     custo_total = custo * ajuste
 
     st.markdown(f"**BLEU estimado:** `{bleu:.2f}`")
-    st.markdown(f"**Custo estimado (FLOPs):** `{custo_total:.2f}` unidades")
+    st.markdown(f"**Custo estimado (FLOPs):** `{custo_total:.2f}` unidades computacionais")
 
     if bleu >= 28.0:
         st.success("✅ Parabéns! Você otimizou bem seu Transformer.")
@@ -280,35 +321,44 @@ def phase5_training_results():
 
     report_bug_section()
 
+
 # --- Resumo Final + LLM ---
 def game_summary():
-    st.header("Resumo: Attention Is All You Need 🎉")
-    st.write("Você concluiu todas as fases e compreendeu os principais pilares da arquitetura Transformer. Veja abaixo um resumo aprofundado, totalmente alinhado ao artigo original de Vaswani et al. (2017):")
+    st.header("Resumo: Descobertas do Artigo *Attention Is All You Need* 🎉")
 
     st.markdown("""
-**1. Arquitetura baseada exclusivamente em atenção**  
-O Transformer elimina redes recorrentes (RNNs) e convolucionais (CNNs), usando atenção como base para capturar dependências entre tokens, permitindo paralelismo.
+Você concluiu todas as fases e compreendeu os principais pilares da arquitetura Transformer. Aqui está um resumo aprofundado, diretamente alinhado ao artigo de Vaswani et al. (2017):
 
-**2. Treinamento altamente paralelizável**  
-Sem processar um token por vez, o modelo acelera o treinamento usando processamento simultâneo em GPUs/TPUs.
+---
 
-**3. Mecanismo de auto-atenção (self-attention)**  
-Cada palavra pondera sua relação com todas as outras da sequência, produzindo uma representação contextual rica.
+📘 **Conceitos centrais:**
 
-**4. Produto escalar escalonado**  
-Para evitar saturação da softmax e gradientes instáveis, o produto escalar é dividido por √dₖ.
+1. **Atenção como mecanismo principal**  
+   O Transformer substitui completamente RNNs e CNNs, baseando-se apenas em mecanismos de atenção. Isso permite maior paralelização e menor custo computacional.
 
-**5. Atenção multi-cabeça**  
-Múltiplas cabeças processam diferentes subespaços de atenção em paralelo (sintaxe, semântica etc.).
+2. **Auto-atenção (Self-Attention)**  
+   Cada palavra se relaciona com todas as outras da sequência para gerar uma representação contextualizada.
 
-**6. Codificação posicional senoidal**  
-Como não há ordem natural, a posição é codificada usando seno e cosseno de frequências diferentes.
+3. **Produto escalar escalonado**  
+   Divide o produto Q·K por √dₖ para manter os valores dentro de uma faixa útil ao softmax, evitando gradientes pequenos ou saturação.
 
-**7. Resultados em BLEU**  
-No WMT 2014, o Transformer superou todos os modelos anteriores com BLEU score 27.3 (base) e 28.4 (big).
+4. **Multi-Head Attention**  
+   Várias cabeças de atenção aprendem diferentes padrões simultaneamente, enriquecendo a compreensão contextual.
 
-**8. Generalização para outras tarefas**  
-Sua estrutura inspirou modelos como BERT, GPT, T5 — aplicados em muitas tarefas de NLP.
+5. **Codificação Posicional Senoidal**  
+   Funções seno e cosseno representam posição dos tokens sem depender de sequência recorrente.
+
+6. **Eficiência no Treinamento**  
+   O modelo alcançou melhores resultados com menos custo, superando modelos anteriores como GNMT, ByteNet e ConvS2S.
+
+---
+
+🔬 **Além do artigo: Impacto na IA atual**
+
+- O Transformer se tornou a base para **BERT, GPT, T5, BART, DeBERTa**, entre outros.
+- Modelos baseados nele lideram benchmarks em tradução, sumarização, geração de texto, classificação, QA e mais.
+- Sua estrutura modular e escalável possibilitou o avanço dos **LLMs (Large Language Models)** e da **IA generativa** em escala global.
+
 """)
 
     st.markdown("---")
