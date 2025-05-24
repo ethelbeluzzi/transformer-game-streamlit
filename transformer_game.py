@@ -39,7 +39,10 @@ def report_bug_section():
 def main_menu():
     st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀")
     st.markdown("Bem-vindo, **engenheiro de IA**! Sua missão é construir o modelo de tradução de linguagem mais eficiente e poderoso do mundo. Guie seu **Transformer** através das fases de design, treinamento e otimização.")
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
+    try:
+        st.image("img/transformer.png", use_container_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
+    except:
+        st.warning("⚠️ Imagem da arquitetura não pôde ser carregada. Verifique o caminho local ou a conexão com a internet.")
     st.write("Prepare-se para desvendar os segredos da atenção!")
     if st.button("Iniciar Missão ➡️", key="main_menu_start_button"):
         st.session_state.game_state = "phase1"
@@ -163,3 +166,4 @@ elif st.session_state.game_state == "phase5":
     phase5_training_results()
 elif st.session_state.game_state == "summary":
     game_summary()
+
