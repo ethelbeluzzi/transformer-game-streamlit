@@ -25,10 +25,10 @@ def log_feedback(feedback_text):
 
 # --- Função lateral de bug/sugestão ---
 def report_bug_section():
-    st.sidebar.subheader("\U0001F41E Reportar Erro / Sugestão")
+    st.sidebar.subheader("🐞 Reportar Erro / Sugestão")
     with st.sidebar.form("bug_report_form", clear_on_submit=True):
         bug_text = st.text_area("Descreva o erro que encontrou ou sua sugestão de melhoria:")
-        submitted = st.form_submit_button("Enviar Feedback ✉️", key="feedback_submit_button")
+        submitted = st.form_submit_button("Enviar Feedback ✉️")
         if submitted:
             if bug_text.strip():
                 log_feedback(bug_text)
@@ -40,7 +40,7 @@ def main_menu():
     st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀")
     st.markdown("Bem-vindo, **engenheiro de IA**! Sua missão é construir o modelo de tradução de linguagem mais eficiente e poderoso do mundo. Guie seu **Transformer** através das fases de design, treinamento e otimização.")
     try:
-        st.image("img/transformer.png", use_container_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
+        st.image("img/transformer.png", width=200, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
     except:
         st.warning("⚠️ Imagem da arquitetura não pôde ser carregada. Verifique o caminho local ou a conexão com a internet.")
     st.write("Prepare-se para desvendar os segredos da atenção!")
@@ -142,7 +142,13 @@ def phase5_training_results():
 
 def game_summary():
     st.header("Missão Concluída! Parabéns! 🎉")
-    st.markdown("* Arquitetura baseada em atenção\n* Paralelização aumentada\n* Auto-atenção\n* Multi-Head Attention\n* Codificação Posicional\n* Resultados superiores\n* Generalização...")
+    st.markdown("* Arquitetura baseada em atenção
+* Paralelização aumentada
+* Auto-atenção
+* Multi-Head Attention
+* Codificação Posicional
+* Resultados superiores
+* Generalização...")
     if st.button("Jogar Novamente 🔁", key="summary_replay_button"):
         for key in st.session_state.keys():
             del st.session_state[key]
@@ -150,7 +156,7 @@ def game_summary():
     report_bug_section()
 
 # --- Navegação entre fases ---
-st.write(f"\U0001F9ED Estado atual: {st.session_state.game_state}")
+st.write(f"🧭 Estado atual: {st.session_state.game_state}")
 
 if st.session_state.game_state == "menu":
     main_menu()
@@ -166,4 +172,3 @@ elif st.session_state.game_state == "phase5":
     phase5_training_results()
 elif st.session_state.game_state == "summary":
     game_summary()
-
