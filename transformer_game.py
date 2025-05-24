@@ -20,12 +20,14 @@ def log_feedback(feedback_text):
 # --- Conteúdo do Jogo ---
 
 def main_menu():
-    st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀") # Nome do jogo em português
+    # Título modificado para confirmar a atualização da versão
+    st.title("🚀 A Jornada do Transformer: Atenção Desvendada! (V3) 🚀")
     st.markdown("Bem-vindo, **engenheiro de IA**! Sua missão é construir o modelo de tradução de linguagem mais eficiente e poderoso do mundo. Guie seu **Transformer** através das fases de design, treinamento e otimização.")
     # Mantendo apenas a imagem principal da arquitetura
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
     st.write("Prepare-se para desvendar os segredos da atenção!")
-    if st.button("Iniciar Missão ➡️", key="start_button_main_menu"): # Adicionado key para garantir unicidade
+    # Mudando a key do botão inicial para evitar qualquer confusão teórica
+    if st.button("Iniciar Missão ➡️", key="main_menu_start_button"):
         print("Botão 'Iniciar Missão' clicado!") # Log para depuração
         st.session_state.game_state = "phase1"
         st.rerun()
@@ -92,8 +94,8 @@ def phase2_scaled_dot_product_attention():
     with col1:
         if st.button("Aumentar a magnitude dos produtos escalares", key="p2_btn_increase"):
             st.error("❌ Incorreto! Na verdade, é o oposto. Para grandes valores de $d_k$, os produtos escalares tendem a crescer muito em magnitude naturalmente.")
-            if 'p2_attempts' not in st.session_state: st.session_state.p2_attempts = 0
-            st.session_state.p2_attempts += 1
+            if 'p2_attempts' not in st.session_state: st.session_state.p1_attempts = 0
+            st.session_state.p1_attempts += 1
     with col2:
         if st.button("Evitar gradientes muito pequenos no softmax ✅", key="p2_btn_softmax"):
             st.success("✅ Correto! Para grandes valores de $d_k$, os produtos escalares crescem muito em magnitude, empurrando a função softmax para regiões com gradientes extremamente pequenos. A escala por $\\frac{1}{\\sqrt{d_k}}$ contrai esse efeito, garantindo um treinamento mais estável. ****")
@@ -165,7 +167,7 @@ def phase4_positional_encoding():
         if st.button("Funções Seno e Cosseno de Diferentes Frequências ✅", key="p4_btn_sin_cos"):
             st.success("✅ Correto! O paper usou funções seno e cosseno de diferentes frequências para gerar os encodings posicionais. ****")
             st.write("Cada dimensão do encoding posicional corresponde a uma sinusoide, e isso permite que o modelo aprenda facilmente a atender por posições relativas, pois os encodings formam uma progressão geométrica.")
-            # IMAGEM DO POSITIONAL ENCODING REMOVIDA AQUI, CONFORME SOLICITADO
+            # **IMAGEM REMOVIDA AQUI, CONFORME SOLICITADO**
             if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"): # Adicionado key
                 print("Botão 'Avançar para Fase 5' clicado!") # Log para depuração
                 st.session_state.game_state = "phase5"
@@ -241,8 +243,9 @@ def game_summary():
 
 def report_bug_section():
     st.sidebar.subheader("🐞 Reportar Erro / Sugestão")
-    with st.sidebar.form("bug_report_form", clear_on_submit=True): # Adicionado clear_on_submit=True para limpar após o envio
-        # Removido 'key' do st.text_area e do st.form_submit_button, pois causam TypeError
+    # Adicionado 'clear_on_submit=True' para limpar o campo após o envio do formulário
+    with st.sidebar.form("bug_report_form", clear_on_submit=True):
+        # Removido 'key' do st.text_area e do st.form_submit_button, pois causavam TypeError
         bug_text = st.text_area("Descreva o erro que encontrou ou sua sugestão de melhoria:")
         submitted = st.form_submit_button("Enviar Feedback ✉️")
         if submitted and bug_text:
