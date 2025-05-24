@@ -46,7 +46,7 @@ def log_feedback(feedback_text):
 
 # --- Função lateral de bug/sugestão ---
 def report_bug_section():
-    st.sidebar.subheader("🐞 Reportar Erro / Sugestão")
+    st.sidebar.subheader("🐞 Reportar Erro Conceitual do Jogo")
     with st.sidebar.form("bug_report_form", clear_on_submit=True):
         bug_text = st.text_area("Descreva o erro que encontrou ou sua sugestão de melhoria:")
         submitted = st.form_submit_button("Enviar Feedback ✉️")
