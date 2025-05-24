@@ -194,12 +194,31 @@ def phase3_multi_head_attention():
     report_bug_section()
 # --- Fase 4 ---
 def phase4_positional_encoding():
-    st.header("Fase 4: Corrida com Codificação Posicional 📍")
-    st.write("Aqui, seu token precisa seguir um caminho com saltos senoidais para escapar dos obstáculos.")
-    st.write("O objetivo é simular o comportamento da codificação posicional seno/cosseno usada no Transformer.")
+    st.header("Fase 4: A Importância da Posição (Positional Encoding) 📍")
+    st.write("Como o Transformer não possui recorrência ou convolução, ele precisa de uma forma de representar a **ordem das palavras** na sequência. Para isso, adicionamos *codificações posicionais* aos vetores de entrada.")
+
+    st.markdown("""
+📘 **Conceito-chave do artigo**:
+> "Como nosso modelo não possui nenhuma recorrência ou convolução, adicionamos informações de posição às embeddings de entrada em todas as camadas de codificador e decodificador." (Vaswani et al., 2017)
+
+As codificações posicionais são geradas com funções **seno** e **cosseno** de diferentes frequências, permitindo que o modelo distinga tokens por sua posição **e generalize** para sequências maiores que as vistas no treinamento.
+    """)
+
+    st.subheader("Visualização do caminho posicional")
+    st.write("Use o controle abaixo para ajustar o tamanho da sequência (quantidade de tokens) e ver como a codificação posicional muda:")
 
     num_pontos = st.slider("Tamanho da sequência (tokens)", 5, 50, 20)
-    uso_seno = st.radio("Tipo de codificação posicional:", ["Constante", "Linear", "Senoidal"], index=2)
+    uso_seno = st.radio("Tipo de codificação simulada:", ["Constante", "Linear", "Senoidal"], index=2)
+
+    st.markdown("""
+🔎 **O que muda quando você aumenta a sequência?**
+- A **codificação constante** não representa posição alguma.
+- A **linear** só distingue posições por ordem direta (ex: 1, 2, 3...).
+- A **senoidal**, como no artigo, permite que o modelo compare posições relativas usando combinações harmônicas, sendo **mais robusta e generalizável**.
+    """)
+
+    import numpy as np
+    import matplotlib.pyplot as plt
 
     x = np.arange(num_pontos)
     if uso_seno == "Constante":
@@ -211,16 +230,16 @@ def phase4_positional_encoding():
 
     fig, ax = plt.subplots()
     ax.plot(x, y, marker='o')
-    ax.set_title("Caminho da posição na sequência")
+    ax.set_title("Codificação Posicional - Visualização Simulada")
     st.pyplot(fig)
 
     if uso_seno == "Senoidal":
-        st.success("✅ Correto! Funções seno e cosseno codificam posições relativas no Transformer.")
+        st.success("✅ Correto! A codificação senoidal é usada no Transformer para representar posição de forma contínua e extrapolável.")
         if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"):
             st.session_state.game_state = "phase5"
             st.rerun()
     else:
-        st.warning("⚠️ A codificação correta é senoidal. Tente novamente.")
+        st.warning("⚠️ A codificação senoidal é a que melhor representa a posição, segundo o artigo. Tente selecioná-la.")
 
     report_bug_section()
 
