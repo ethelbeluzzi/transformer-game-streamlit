@@ -26,7 +26,8 @@ def main_menu():
     st.write("Prepare-se para desvendar os segredos da atenção!")
     if st.button("Iniciar Missão ➡️"):
         st.session_state.game_state = "phase1"
-        st.rerun() # Corrigido: st.experimental_rerun() para st.rerun()
+        st.rerun() # Corrigido para st.rerun()
+
     report_bug_section()
 
 
@@ -57,7 +58,7 @@ def phase1_architecture():
             st.write("Próxima etapa: mergulhar no coração da atenção!")
             if st.button("Avançar para Fase 2 ➡️"):
                 st.session_state.game_state = "phase2"
-                st.rerun() # Corrigido: st.experimental_rerun() para st.rerun()
+                st.rerun() # Corrigido para st.rerun()
 
     if st.session_state.get('p1_attempts', 0) >= 3 and st.session_state.game_state != "phase2":
         st.info("💡 Dica: Lembre-se que o Transformer 'dispensa' recorrência e convoluções para focar em paralelismo.")
@@ -94,7 +95,7 @@ def phase2_scaled_dot_product_attention():
             st.write("Excelente! A 'Scaled Dot-Product Attention' é fundamental para a estabilidade e o desempenho do Transformer.")
             if st.button("Avançar para Fase 3 ➡️"):
                 st.session_state.game_state = "phase3"
-                st.rerun() # Corrigido: st.experimental_rerun() para st.rerun()
+                st.rerun() # Corrigido para st.rerun()
 
     if st.session_state.get('p2_attempts', 0) >= 2 and st.session_state.game_state != "phase3":
         st.info("💡 Dica: Pense no que acontece com os valores quando $d_k$ é grande e qual função é usada para obter os pesos (softmax).")
@@ -124,7 +125,7 @@ def phase3_multi_head_attention():
         st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Multi-Head Attention") # Corrigido: use_container_width
         if st.button("Avançar para Fase 4 ➡️"):
             st.session_state.game_state = "phase4"
-            st.rerun() # Corrigido: st.experimental_rerun() para st.rerun()
+            st.rerun() # Corrigido para st.rerun()
     else:
         st.warning(f"Tente novamente. Lembre-se que o custo computacional é mantido similar ao de uma única cabeça de atenção com dimensionalidade total.")
         if 'p3_attempts' not in st.session_state: st.session_state.p3_attempts = 0
@@ -156,11 +157,11 @@ def phase4_positional_encoding():
         if st.button("Funções Seno e Cosseno de Diferentes Frequências ✅"):
             st.success("✅ Correto! O paper usou funções seno e cosseno de diferentes frequências para gerar os encodings posicionais. ****")
             st.write("Cada dimensão do encoding posicional corresponde a uma sinusoide, e isso permite que o modelo aprenda facilmente a atender por posições relativas, pois os encodings formam uma progressão geométrica.")
-            # Corrigido: Nova URL para a imagem do Positional Encoding
-            st.image("https://jalammar.github.io/images/t/transformer_positional_encoding.png", use_container_width=True, caption="Positional Encoding: Uma onda para cada posição") # Corrigido: use_container_width e URL
+            # **NOVA TENTATIVA DE URL PARA A IMAGEM DO POSITIONAL ENCODING**
+            st.image("https://docs.streamlit.io/en/stable/_images/positional_encoding_example.png", use_container_width=True, caption="Positional Encoding: Uma onda para cada posição") # Corrigido: use_container_width e NOVA URL
             if st.button("Avançar para Fase 5 ➡️"):
                 st.session_state.game_state = "phase5"
-                st.rerun() # Corrigido: st.experimental_rerun() para st.rerun()
+                st.rerun() # Corrigido para st.rerun()
     with col3:
         if st.button("Hash de Posição"):
             st.error("❌ Incorreto. Essa não foi a técnica utilizada no paper original para o Positional Encoding.")
@@ -203,7 +204,7 @@ def phase5_training_results():
     st.write("Sua missão está completa, engenheiro! Você construiu e otimizou um Transformer com sucesso!")
     if st.button("Ver Resumo das Descobertas 🏆"):
         st.session_state.game_state = "summary"
-        st.rerun() # Corrigido: st.experimental_rerun() para st.rerun()
+        st.rerun() # Corrigido para st.rerun()
     report_bug_section()
 
 
@@ -225,7 +226,7 @@ def game_summary():
         # Limpa o estado da sessão para reiniciar o jogo
         for key in st.session_state.keys():
             del st.session_state[key]
-        st.rerun() # Corrigido: st.experimental_rerun() para st.rerun()
+        st.rerun() # Corrigido para st.rerun()
     report_bug_section()
 
 def report_bug_section():
