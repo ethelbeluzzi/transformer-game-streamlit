@@ -66,17 +66,17 @@ def llm_sidebar_consultation():
     if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question.strip():
         with st.spinner("Consultando a LLM..."):
             try:
-                HF_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"
+                HF_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-base"
                 hf_token = st.secrets["HF_TOKEN"]
 
                 headers = {
-                    "Authorization": f"Bearer {hf_token}",
+                    "Authorization": f"Bearer {HF_TOKEN}",
                     "Content-Type": "application/json"
                 }
 
                 payload = {
                     "inputs": user_question.strip(),
-                    "options": {"wait_for_model": True}  # Garante que aguarde o carregamento do modelo
+                    "options": {"wait_for_model": True}
                 }
 
                 response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=30)
@@ -90,6 +90,7 @@ def llm_sidebar_consultation():
 
             except Exception as e:
                 st.sidebar.error(f"Erro técnico: {e}")
+
 
 
 # --- Fase 1: Mini-game de Montagem do Transformer ---
