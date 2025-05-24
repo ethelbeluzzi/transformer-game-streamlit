@@ -62,25 +62,36 @@ import requests
 def llm_sidebar_consultation():
     st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para uma LLM!")
     user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="llm_user_question")
-    if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question:
+
+    if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question.strip():
         with st.spinner("Consultando a LLM..."):
             try:
-                # Requisição real ao modelo Mistral-7B no Hugging Face
                 HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
-                headers = {"Content-Type": "application/json"}
+                hf_token = st.secrets["HF_TOKEN"]  # ⚠️ Adicione isso ao seu .streamlit/secrets.toml
+
+                headers = {
+                    "Authorization": f"Bearer {hf_token}",
+                    "Content-Type": "application/json"
+                }
+
                 payload = {
                     "inputs": f"[INST] {user_question.strip()} [/INST]",
                     "options": {"wait_for_model": True}
                 }
 
-                response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=20)
+                response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=30)
 
                 if response.status_code == 200:
                     result = response.json()
-                    answer = result[0]['generated_text']
+                    # Ajuste conforme o formato da resposta do modelo
+                    if isinstance(result, list) and 'generated_text' in result[0]:
+                        answer = result[0]['generated_text']
+                    else:
+                        answer = result
                     st.sidebar.success(f"📘 Resposta da LLM:\n\n{answer}")
                 else:
-                    st.sidebar.error("❌ Erro ao consultar a LLM. Tente novamente mais tarde.")
+                    st.sidebar.error(f"Erro {response.status_code}: {response.text}")
+
             except Exception as e:
                 st.sidebar.error(f"Erro técnico: {e}")
 
