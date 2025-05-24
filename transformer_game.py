@@ -120,11 +120,12 @@ Se Q·K for muito grande, a softmax se satura e os gradientes viram quase zero. 
 
     if com_escalonamento < 30:
         st.success("✅ Perfeito! O escalonamento protege a função softmax de saturar, garantindo gradientes estáveis.")
+        st.info("📘 Dica: valores escalonados entre **10 e 30** são ideais. Eles mantêm a softmax funcionando bem: os pesos não ficam extremos e o modelo consegue aprender com eficiência.")
         if st.button("Avançar para Fase 3 ➡️", key="p2_advance_button"):
             st.session_state.game_state = "phase3"
             st.rerun()
     else:
-        st.warning("⚠️ O valor escalonado ainda está alto. Isso pode saturar a softmax e impedir o modelo de aprender corretamente. Reduza Q, K ou aumente dₖ.")
+        st.warning("⚠️ O valor escalonado ainda está alto. Isso pode saturar a softmax e impedir o modelo de aprender corretamente. Tente ajustar Q, K ou aumentar dₖ para que o resultado fique entre **10 e 30**.")
 
     report_bug_section()
 
