@@ -66,11 +66,11 @@ def llm_sidebar_consultation():
     if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question.strip():
         with st.spinner("Consultando a LLM..."):
             try:
-                HF_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-base"
-                hf_token = st.secrets["HF_TOKEN"]  # ✅ nome minúsculo aqui
+                HF_API_URL = "https://api-inference.huggingface.co/models/mrm8488/t5-base-finetuned-question-generation-ap"
+                hf_token = st.secrets["HF_TOKEN"]
 
                 headers = {
-                    "Authorization": f"Bearer {hf_token}",  # ✅ corrigido aqui
+                    "Authorization": f"Bearer {hf_token}",
                     "Content-Type": "application/json"
                 }
 
@@ -83,14 +83,17 @@ def llm_sidebar_consultation():
 
                 if response.status_code == 200:
                     result = response.json()
-                    answer = result[0]['generated_text'] if isinstance(result, list) and 'generated_text' in result[0] else str(result[0])
+                    # Verifica estrutura esperada
+                    if isinstance(result, list) and "generated_text" in result[0]:
+                        answer = result[0]["generated_text"]
+                    else:
+                        answer = str(result)
                     st.sidebar.success(f"📘 Resposta da LLM:\n\n{answer}")
                 else:
                     st.sidebar.error(f"Erro {response.status_code}: {response.text}")
 
             except Exception as e:
                 st.sidebar.error(f"Erro técnico: {e}")
-
 
 
 # --- Fase 1: Mini-game de Montagem do Transformer ---
