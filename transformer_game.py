@@ -209,7 +209,8 @@ def game_summary():
     st.header("Resumo: Attention Is All You Need 🎉")
     st.write("Você concluiu todas as fases e compreendeu os principais pilares da arquitetura Transformer. Veja abaixo um resumo aprofundado, totalmente alinhado ao artigo original de Vaswani et al. (2017):")
 
-    st.markdown(\"\"\"**1. Arquitetura baseada exclusivamente em atenção**  
+    st.markdown("""
+**1. Arquitetura baseada exclusivamente em atenção**  
 O Transformer elimina redes recorrentes (RNNs) e convolucionais (CNNs), usando atenção como base para capturar dependências entre tokens, permitindo paralelismo.
 
 **2. Treinamento altamente paralelizável**  
@@ -231,7 +232,8 @@ Como não há ordem natural, a posição é codificada usando seno e cosseno de 
 No WMT 2014, o Transformer superou todos os modelos anteriores com BLEU score 27.3 (base) e 28.4 (big).
 
 **8. Generalização para outras tarefas**  
-Sua estrutura inspirou modelos como BERT, GPT, T5 — aplicados em muitas tarefas de NLP.\"\"\")
+Sua estrutura inspirou modelos como BERT, GPT, T5 — aplicados em muitas tarefas de NLP.
+""")
 
     st.markdown("---")
     st.subheader("❓ Pergunte sobre Transformers")
