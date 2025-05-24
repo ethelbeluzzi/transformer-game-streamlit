@@ -404,27 +404,35 @@ def game_summary():
 - O **Encoder** transforma a entrada em uma representação contextual.
 - O **Decoder** gera a saída com base nessa representação e nas posições anteriores.
 - Isso permite lidar com **tarefas de tradução**, sumarização e outras sequenciais com alta flexibilidade.
+""")
 
+    st.markdown("""
 #### 2. **Mecanismo de Atenção por Produto Escalar Escalonado**
 - A atenção compara a *query* com todas as *keys* e pondera os *values*.
 - O produto Q·K é **escalonado por √dₖ**, evitando saturação da função softmax.
 - Isso mantém os **gradientes úteis** e o **treinamento estável**, mesmo em modelos grandes.
+""")
 
+    st.markdown("""
 #### 3. **Atenção Multi-Cabeça (Multi-Head Attention)**
 - Em vez de uma única atenção, o modelo usa múltiplas cabeças independentes.
 - Cada cabeça aprende um padrão diferente: **estrutura, semântica, posição, dependências**.
 - No final, os resultados são **concatenados** e projetados novamente, enriquecendo a representação.
+""")
 
+    st.markdown("""
 #### 4. **Positional Encoding**
 - Como o Transformer **não possui recorrência**, ele precisa saber a posição das palavras.
 - Usando **funções seno e cosseno**, cada posição recebe uma curva única, contínua e extrapolável.
 - Isso permite ao modelo lidar com **ordem das palavras** mesmo em contextos longos ou fora da distribuição.
+""")
 
+    st.markdown("""
 #### 5. **Eficiência de Treinamento e Resultados**
 - O Transformer atinge **BLEU scores superiores** a modelos anteriores com **menos FLOPs**.
 - A ausência de recorrência permite **paralelização total** no treinamento.
 - Sua eficiência abriu caminho para modelos massivos como BERT, GPT, T5, e muitos outros.
-    """)
+""")
 
     st.markdown("### 🌍 Impactos no mundo real")
     st.markdown("""
