@@ -25,7 +25,7 @@ def main_menu():
     # Mantendo apenas a imagem principal da arquitetura
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
     st.write("Prepare-se para desvendar os segredos da atenção!")
-    if st.button("Iniciar Missão ➡️", key="start_button"): # Adicionado key para garantir unicidade
+    if st.button("Iniciar Missão ➡️", key="start_button_main_menu"): # Adicionado key para garantir unicidade
         print("Botão 'Iniciar Missão' clicado!") # Log para depuração
         st.session_state.game_state = "phase1"
         st.rerun()
@@ -165,7 +165,7 @@ def phase4_positional_encoding():
         if st.button("Funções Seno e Cosseno de Diferentes Frequências ✅", key="p4_btn_sin_cos"):
             st.success("✅ Correto! O paper usou funções seno e cosseno de diferentes frequências para gerar os encodings posicionais. ****")
             st.write("Cada dimensão do encoding posicional corresponde a uma sinusoide, e isso permite que o modelo aprenda facilmente a atender por posições relativas, pois os encodings formam uma progressão geométrica.")
-            # **IMAGEM REMOVIDA AQUI, CONFORME SOLICITADO**
+            # IMAGEM DO POSITIONAL ENCODING REMOVIDA AQUI, CONFORME SOLICITADO
             if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"): # Adicionado key
                 print("Botão 'Avançar para Fase 5' clicado!") # Log para depuração
                 st.session_state.game_state = "phase5"
@@ -242,8 +242,8 @@ def game_summary():
 def report_bug_section():
     st.sidebar.subheader("🐞 Reportar Erro / Sugestão")
     with st.sidebar.form("bug_report_form"):
-        bug_text = st.text_area("Descreva o erro que encontrou ou sua sugestão de melhoria:")
-        submitted = st.form_submit_button("Enviar Feedback ✉️")
+        bug_text = st.text_area("Descreva o erro que encontrou ou sua sugestão de melhoria:", key="bug_report_text_area") # Adicionado key
+        submitted = st.form_submit_button("Enviar Feedback ✉️", key="bug_report_submit_button") # Adicionado key
         if submitted and bug_text:
             log_feedback(bug_text)
         elif submitted and not bug_text:
