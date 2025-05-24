@@ -20,16 +20,20 @@ def init_state():
 init_state()
 
 # --- Logs de Feedback ---
-LOG_FILE = "game_feedback.log"
+import requests
+import datetime
+
+GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyddJpUamCosCP43TtS9I1bNWW-aOkyMrI2JD3RDV3Ny-rVLgUC24STdwNwRimDtClbpA/exec"  # ← substitua com sua URL
 
 def log_feedback(feedback_text):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
-        with open(LOG_FILE, "a") as f:
-            f.write(f"[{timestamp}] {feedback_text}\n")
-        st.success("Obrigado pelo seu feedback! Ele foi registrado.")
+        requests.post(GOOGLE_SHEETS_WEBHOOK_URL, data={
+            "feedback": f"[{timestamp}] {feedback_text}"
+        })
+        st.success("✅ Seu feedback foi registrado com sucesso na planilha!")
     except Exception as e:
-        st.error(f"Erro ao salvar feedback: {e}")
+        st.error("❌ Erro ao enviar feedback. Verifique a conexão com o webhook.")
 
 # --- Função lateral de bug/sugestão ---
 def report_bug_section():
