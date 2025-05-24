@@ -142,13 +142,15 @@ def phase5_training_results():
 
 def game_summary():
     st.header("Missão Concluída! Parabéns! 🎉")
-    st.markdown("* Arquitetura baseada em atenção
-* Paralelização aumentada
-* Auto-atenção
-* Multi-Head Attention
-* Codificação Posicional
-* Resultados superiores
-* Generalização...")
+    st.markdown("""
+* Arquitetura baseada em atenção  
+* Paralelização aumentada  
+* Auto-atenção  
+* Multi-Head Attention  
+* Codificação Posicional  
+* Resultados superiores  
+* Generalização...
+""")
     if st.button("Jogar Novamente 🔁", key="summary_replay_button"):
         for key in st.session_state.keys():
             del st.session_state[key]
