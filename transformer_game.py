@@ -150,7 +150,26 @@ A arquitetura Encoder-Decoder permite que o modelo processe a entrada por comple
     report_bug_section()
 
 # --- Fase 2 ---
+      def phase2_scaled_dot_product_attention():
+    st.header("Fase 2: Corrida de Vetores e Escalonamento 🎯")
+
+    st.markdown("""
+> 📘 **Conceito-chave do artigo**  
+> "Utilizamos atenção por produto escalar escalonado, que é rápida e eficiente em termos de espaço computacional."  
+> — *Vaswani et al., 2017*
+
+A divisão por √dₖ evita que os valores da softmax se tornem extremos, preservando gradientes úteis para aprendizado. Essa operação é fundamental para a estabilidade da rede durante o treinamento.
+    """)
+
+    with st.expander("🤔 O que são Q, K e dₖ?"):
+        st.markdown("""
+- **Q (Query - Consulta):** Representa o vetor da palavra que está buscando contexto.  
+- **K (Key - Chave):** Representa as palavras candidatas a fornecer esse contexto.  
+- **dₖ (dimensão da chave):** Tamanho dos vetores Q e K.  
+- Se dₖ for grande, os produtos Q·K podem saturar a softmax. Por isso escalonamos.
         """)
+        st.markdown("A fórmula da atenção é:")
+        st.latex(r"Attention(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V")
 
     q_val = st.slider("Valor do vetor Q (intensidade da consulta)", 1, 100, 60, step=1)
     k_val = st.slider("Valor do vetor K (intensidade da chave)", 1, 100, 80, step=1)
