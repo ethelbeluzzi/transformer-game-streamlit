@@ -1,5 +1,3 @@
-# Célula 2: Cria o arquivo do jogo transformer_game.py
-
 import streamlit as st
 import time
 import datetime
@@ -22,7 +20,7 @@ def log_feedback(feedback_text):
 # --- Conteúdo do Jogo ---
 
 def main_menu():
-    st.title("🚀 The Transformer's Journey: Attention Unleashed! 🚀")
+    st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀") # Nome do jogo em português
     st.markdown("Bem-vindo, **engenheiro de IA**! Sua missão é construir o modelo de tradução de linguagem mais eficiente e poderoso do mundo. Guie seu **Transformer** através das fases de design, treinamento e otimização.")
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_column_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
     st.write("Prepare-se para desvendar os segredos da atenção!")
