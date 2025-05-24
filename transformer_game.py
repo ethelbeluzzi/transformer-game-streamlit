@@ -1,6 +1,5 @@
 # Célula 2: Cria o arquivo do jogo transformer_game.py
 
-%%writefile transformer_game.py
 import streamlit as st
 import time
 import datetime
