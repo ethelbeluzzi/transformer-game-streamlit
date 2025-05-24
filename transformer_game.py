@@ -241,9 +241,10 @@ def game_summary():
 
 def report_bug_section():
     st.sidebar.subheader("🐞 Reportar Erro / Sugestão")
-    with st.sidebar.form("bug_report_form"):
-        bug_text = st.text_area("Descreva o erro que encontrou ou sua sugestão de melhoria:", key="bug_report_text_area") # Adicionado key
-        submitted = st.form_submit_button("Enviar Feedback ✉️", key="bug_report_submit_button") # Adicionado key
+    with st.sidebar.form("bug_report_form", clear_on_submit=True): # Adicionado clear_on_submit=True para limpar após o envio
+        # Removido 'key' do st.text_area e do st.form_submit_button, pois causam TypeError
+        bug_text = st.text_area("Descreva o erro que encontrou ou sua sugestão de melhoria:")
+        submitted = st.form_submit_button("Enviar Feedback ✉️")
         if submitted and bug_text:
             log_feedback(bug_text)
         elif submitted and not bug_text:
