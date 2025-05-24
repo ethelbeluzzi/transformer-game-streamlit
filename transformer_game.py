@@ -66,8 +66,8 @@ def llm_sidebar_consultation():
     if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question.strip():
         with st.spinner("Consultando a LLM..."):
             try:
-                HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
-                hf_token = st.secrets["HF_TOKEN"]  # ⚠️ Adicione isso ao seu .streamlit/secrets.toml
+                HF_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"
+                hf_token = st.secrets["HF_TOKEN"]
 
                 headers = {
                     "Authorization": f"Bearer {hf_token}",
@@ -75,25 +75,22 @@ def llm_sidebar_consultation():
                 }
 
                 payload = {
-                    "inputs": f"[INST] {user_question.strip()} [/INST]",
-                    "options": {"wait_for_model": True}
+                    "inputs": user_question.strip(),
+                    "options": {"wait_for_model": True}  # Garante que aguarde o carregamento do modelo
                 }
 
                 response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=30)
 
                 if response.status_code == 200:
                     result = response.json()
-                    # Ajuste conforme o formato da resposta do modelo
-                    if isinstance(result, list) and 'generated_text' in result[0]:
-                        answer = result[0]['generated_text']
-                    else:
-                        answer = result
+                    answer = result[0]['generated_text'] if isinstance(result, list) and 'generated_text' in result[0] else str(result[0])
                     st.sidebar.success(f"📘 Resposta da LLM:\n\n{answer}")
                 else:
                     st.sidebar.error(f"Erro {response.status_code}: {response.text}")
 
             except Exception as e:
                 st.sidebar.error(f"Erro técnico: {e}")
+
 
 # --- Fase 1: Mini-game de Montagem do Transformer ---
 def phase1_architecture():
