@@ -131,29 +131,37 @@ Se Q·K for muito grande, a softmax se satura e os gradientes viram quase zero. 
 
 # --- Fase 3 ---
 def phase3_multi_head_attention():
-    st.header("Fase 3: Cobrinha Multi-Cabeça 🐍")
-    st.write("Neste mini-jogo, você vai entender como diferentes 'cabeças' de atenção podem focar em diferentes partes da entrada.")
-    st.write("Cada cabeça deve capturar um tipo de informação em uma frase simplificada.")
+    st.header("Fase 3: Multi-Head Attention: Cabeças Paralelas 🧠")
+    st.write("Nesta fase, você irá visualizar como o modelo Transformer aplica **múltiplas cabeças de atenção** para capturar diferentes relações **sem que essas categorias sejam pré-definidas**. Cada cabeça aprende, de forma autônoma, a focar em diferentes aspectos da sequência.")
 
-    palavras = ["João", "correu", "até", "a", "loja"]
-    opcoes = ["sintaxe", "semântica", "posição"]
+    st.markdown("""
+📘 **Conceito-chave do artigo**:
+> "Ao invés de realizar uma única atenção com vetores de dimensão d_model, projetamos Q, K, V múltiplas vezes (h cabeças) para subespaços menores, permitindo que o modelo atenda simultaneamente a diferentes informações de diferentes posições." (Vaswani et al., 2017)
 
-    colunas = st.columns(len(palavras))
-    atribuicoes = []
-    for i in range(len(palavras)):
-        with colunas[i]:
-            escolha = st.selectbox(f"'{palavras[i]}'", ["--"] + opcoes, key=f"fase3_{i}")
-            atribuicoes.append(escolha)
+👉 Isso quer dizer que **cada cabeça aprende a buscar padrões diferentes**, como: correspondência sujeito-verbo, coocorrência semântica ou dependência de posição — mas o modelo **não classifica isso explicitamente**.
+    """)
 
-    if st.button("Verificar Cabeças"):
-        tipos_usados = set(atribuicoes)
-        if all(e in tipos_usados for e in opcoes):
-            st.success("✅ Excelente! Cada cabeça está capturando uma dimensão diferente da frase.")
-            if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"):
-                st.session_state.game_state = "phase4"
-                st.rerun()
-        else:
-            st.warning("⚠️ Tente distribuir as atenções entre sintaxe, semântica e posição para as palavras.")
+    st.subheader("Mini-visualização: como múltiplas cabeças se comportam")
+    frase = ["O", "modelo", "aprende", "relações", "entre", "tokens"]
+    st.write("Escolha uma palavra para observar como diferentes cabeças podem reagir a ela:")
+
+    foco = st.selectbox("Palavra de foco (query)", frase, key="p3_query")
+
+    st.markdown("🔎 **Cabeça 1** (posição): tende a olhar para palavras próximas da query.")
+    st.markdown("🔎 **Cabeça 2** (concordância verbal): tende a buscar relação com o verbo.")
+    st.markdown("🔎 **Cabeça 3** (semântica): pode focar em substantivos correlatos.")
+
+    st.markdown("---")
+    st.markdown(f"🧠 Com foco em **{foco}**, veja como cada cabeça pode responder:")
+
+    for i in range(1, 4):
+        st.write(f"**Cabeça {i}:** Atenção distribuída para: ... (simulação textual)")
+
+    st.success("✅ Não há resposta certa ou errada. O importante é entender que diferentes cabeças focam em padrões diferentes simultaneamente.")
+
+    if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"):
+        st.session_state.game_state = "phase4"
+        st.rerun()
 
     report_bug_section()
 
