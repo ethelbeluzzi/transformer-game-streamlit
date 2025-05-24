@@ -49,16 +49,29 @@ def phase1_architecture():
     st.write("Arraste os blocos abaixo para a ordem correta da arquitetura Transformer: de entrada até a saída.")
 
     componentes = [
-        "Embedding", "Encoder", "Mecanismo de Atenção", "Decoder", "Camada de Saída"
-    ]
+        "Mecanismo de Atenção",
+        "Camada de Saída",
+        "Decoder",
+        "Encoder",
+        "Embedding"
+    ]  # Ordem embaralhada para evitar sugestão direta
 
     ordem_correta = [
         "Embedding", "Encoder", "Mecanismo de Atenção", "Decoder", "Camada de Saída"
     ]
 
+    dicas = [
+        "Posição 1 - **Embedding**: transforma cada palavra em um vetor numérico compreensível pela IA.",
+        "Posição 2 - **Encoder**: processa a frase de entrada e gera uma representação contextualizada.",
+        "Posição 3 - **Mecanismo de Atenção**: decide quais palavras são mais importantes umas para as outras.",
+        "Posição 4 - **Decoder**: gera a frase de saída, com base na atenção e no encoder.",
+        "Posição 5 - **Camada de Saída**: traduz a saída do decoder para palavras compreensíveis."
+    ]
+
     escolhas = []
     for i in range(len(ordem_correta)):
-        escolha = st.selectbox(f"Posição {i + 1}", ["⬇️ Escolha"] + componentes, key=f"fase1_{i}")
+        st.markdown(dicas[i])
+        escolha = st.selectbox(f"Escolha para a posição {i + 1}", ["⬇️ Escolha"] + componentes, key=f"fase1_{i}")
         escolhas.append(escolha)
 
     if st.button("Verificar Ordem"):
@@ -82,28 +95,36 @@ def phase1_architecture():
 # --- Fase 2 ---
 def phase2_scaled_dot_product_attention():
     st.header("Fase 2: Corrida de Vetores e Escalonamento 🎯")
-    st.write("Nesta fase, você verá como o escalonamento evita que o softmax fique saturado durante o cálculo de atenção.")
-    st.write("Imagine que os vetores Q e K estão correndo. Se a velocidade (produto escalar) for muito alta, o softmax satura.")
+    st.write("Vamos entender como a atenção funciona usando vetores. Aqui, você controla os vetores **Q (Query)**, **K (Key)** e o parâmetro **dₖ** (dimensão da chave).")
 
-    st.subheader("Velocidade dos vetores:")
-    q_val = st.slider("Valor do vetor Q", 1, 100, 60, step=1)
-    k_val = st.slider("Valor do vetor K", 1, 100, 80, step=1)
-    d_k = st.slider("Dimensão d_k (escalonador)", 1, 100, 64, step=1)
+    with st.expander("🤔 O que são Q, K e dₖ?"):
+        st.markdown("""
+- **Q (Query - Consulta)**: representa o vetor da palavra que está pedindo informação. Ele pergunta: “quais palavras são relevantes para mim?”
+- **K (Key - Chave)**: representa cada uma das outras palavras que podem ser relevantes.
+- **dₖ (dimensão da chave)**: controla o tamanho dos vetores Q e K. Serve para normalizar o cálculo de similaridade.
+
+O cálculo da atenção é feito assim:
+```Attention(Q, K, V) = softmax(Q·Kᵗ / √dₖ)·V```
+Se Q·K for muito grande, a softmax se satura e os gradientes viram quase zero. A divisão por √dₖ evita isso.
+        """)
+
+    q_val = st.slider("Valor do vetor Q (intensidade da consulta)", 1, 100, 60, step=1)
+    k_val = st.slider("Valor do vetor K (intensidade da chave)", 1, 100, 80, step=1)
+    d_k = st.slider("Dimensão dₖ (escalonador, tamanho dos vetores)", 1, 100, 64, step=1)
 
     produto = q_val * k_val
-    sem_escalonar = produto
     com_escalonamento = produto / (d_k ** 0.5)
 
-    st.markdown(f"**Produto Escalar (Q·K):** `{sem_escalonar}`")
-    st.markdown(f"**Após escalonamento (÷ √d_k):** `{com_escalonamento:.2f}`")
+    st.markdown(f"**Produto Escalar (Q·K):** `{produto}`")
+    st.markdown(f"**Escalonado (÷ √dₖ):** `{com_escalonamento:.2f}`")
 
     if com_escalonamento < 30:
-        st.success("✅ Correto! O valor foi escalonado para evitar saturação do softmax.")
+        st.success("✅ Perfeito! O escalonamento protege a função softmax de saturar, garantindo gradientes estáveis.")
         if st.button("Avançar para Fase 3 ➡️", key="p2_advance_button"):
             st.session_state.game_state = "phase3"
             st.rerun()
     else:
-        st.warning("⚠️ O valor ainda está alto. Tente reduzir Q, K ou aumentar d_k.")
+        st.warning("⚠️ O valor escalonado ainda está alto. Isso pode saturar a softmax e impedir o modelo de aprender corretamente. Reduza Q, K ou aumente dₖ.")
 
     report_bug_section()
 
