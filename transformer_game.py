@@ -9,7 +9,7 @@ LOG_FILE = "game_feedback.log"
 def log_feedback(feedback_text):
     """
     Registra o feedback do usuário em um arquivo de log.
-    No ambiente do Colab, este arquivo será temporário com a sessão.
+    No ambiente do Streamlit Cloud, este arquivo é temporário para a sessão.
     Para persistência real, seria necessário um serviço de armazenamento externo.
     """
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -22,11 +22,13 @@ def log_feedback(feedback_text):
 def main_menu():
     st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀") # Nome do jogo em português
     st.markdown("Bem-vindo, **engenheiro de IA**! Sua missão é construir o modelo de tradução de linguagem mais eficiente e poderoso do mundo. Guie seu **Transformer** através das fases de design, treinamento e otimização.")
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!") # Corrigido: use_container_width
+    # Mantendo apenas a imagem principal da arquitetura
+    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Arquitetura do Transformer: Onde a Atenção é Tudo!")
     st.write("Prepare-se para desvendar os segredos da atenção!")
-    if st.button("Iniciar Missão ➡️"):
+    if st.button("Iniciar Missão ➡️", key="start_button"): # Adicionado key para garantir unicidade
+        print("Botão 'Iniciar Missão' clicado!") # Log para depuração
         st.session_state.game_state = "phase1"
-        st.rerun() # Corrigido para st.rerun()
+        st.rerun()
 
     report_bug_section()
 
@@ -41,24 +43,27 @@ def phase1_architecture():
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Redes Recorrentes Complexas 🔄"):
+        if st.button("Redes Recorrentes Complexas 🔄", key="p1_btn_rnn"):
             st.error("❌ Resposta incorreta! Redes recorrentes são inerentemente sequenciais, o que impede a paralelização eficiente dentro dos exemplos de treinamento, tornando-as lentas para sequências longas.")
-            if 'p1_attempts' not in st.session_state: st.session_state.p1_attempts = 0 # Inicializa se não existir
+            if 'p1_attempts' not in st.session_state: st.session_state.p1_attempts = 0
             st.session_state.p1_attempts += 1
     with col2:
-        if st.button("Redes Convolucionais 🖼️"):
+        if st.button("Redes Convolucionais 🖼️", key="p1_btn_cnn"):
             st.warning("⚠️ Resposta aceitável, mas não a ideal! Modelos convolucionais podem processar em paralelo, mas a capacidade de relacionar posições distantes cresce linearmente ou logaritmicamente com a distância, dificultando o aprendizado de dependências de longo alcance de forma ideal.")
             if 'p1_attempts' not in st.session_state: st.session_state.p1_attempts = 0
             st.session_state.p1_attempts += 1
     with col3:
-        if st.button("Atenção Pura (Transformer) ✨"):
+        if st.button("Atenção Pura (Transformer) ✨", key="p1_btn_attention"):
             st.success("✅ Correto! O Transformer se baseia unicamente em mecanismos de atenção, abandonando a recorrência e as convoluções inteiramente. Isso permite muito mais paralelização e um treinamento significativamente mais rápido. ****")
             st.write("O Transformer segue uma arquitetura Encoder-Decoder, usando pilhas de auto-atenção. ****")
-            st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Diagrama Simplificado do Encoder-Decoder") # Corrigido: use_container_width
+            # Mantendo apenas a imagem principal da arquitetura aqui também
+            st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Diagrama Simplificado do Encoder-Decoder")
             st.write("Próxima etapa: mergulhar no coração da atenção!")
-            if st.button("Avançar para Fase 2 ➡️"):
+            # Este botão deve aparecer APENAS se a resposta correta foi escolhida
+            if st.button("Avançar para Fase 2 ➡️", key="p1_advance_button"): # Adicionado key
+                print("Botão 'Avançar para Fase 2' clicado!") # Log para depuração
                 st.session_state.game_state = "phase2"
-                st.rerun() # Corrigido para st.rerun()
+                st.rerun()
 
     if st.session_state.get('p1_attempts', 0) >= 3 and st.session_state.game_state != "phase2":
         st.info("💡 Dica: Lembre-se que o Transformer 'dispensa' recorrência e convoluções para focar em paralelismo.")
@@ -85,17 +90,18 @@ def phase2_scaled_dot_product_attention():
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Aumentar a magnitude dos produtos escalares"):
+        if st.button("Aumentar a magnitude dos produtos escalares", key="p2_btn_increase"):
             st.error("❌ Incorreto! Na verdade, é o oposto. Para grandes valores de $d_k$, os produtos escalares tendem a crescer muito em magnitude naturalmente.")
             if 'p2_attempts' not in st.session_state: st.session_state.p2_attempts = 0
             st.session_state.p2_attempts += 1
     with col2:
-        if st.button("Evitar gradientes muito pequenos no softmax ✅"):
+        if st.button("Evitar gradientes muito pequenos no softmax ✅", key="p2_btn_softmax"):
             st.success("✅ Correto! Para grandes valores de $d_k$, os produtos escalares crescem muito em magnitude, empurrando a função softmax para regiões com gradientes extremamente pequenos. A escala por $\\frac{1}{\\sqrt{d_k}}$ contrai esse efeito, garantindo um treinamento mais estável. ****")
             st.write("Excelente! A 'Scaled Dot-Product Attention' é fundamental para a estabilidade e o desempenho do Transformer.")
-            if st.button("Avançar para Fase 3 ➡️"):
+            if st.button("Avançar para Fase 3 ➡️", key="p2_advance_button"): # Adicionado key
+                print("Botão 'Avançar para Fase 3' clicado!") # Log para depuração
                 st.session_state.game_state = "phase3"
-                st.rerun() # Corrigido para st.rerun()
+                st.rerun()
 
     if st.session_state.get('p2_attempts', 0) >= 2 and st.session_state.game_state != "phase3":
         st.info("💡 Dica: Pense no que acontece com os valores quando $d_k$ é grande e qual função é usada para obter os pesos (softmax).")
@@ -117,15 +123,17 @@ def phase3_multi_head_attention():
 
     st.write("Se $d_{model}=512$ e usamos $h=8$ cabeças, quais seriam as dimensões de $d_k$ e $d_v$ para cada cabeça, para que o custo computacional total seja similar ao de uma única cabeça com dimensionalidade total?")
 
-    d_val = st.slider("Escolha o valor para d_k e d_v (esperado d_model/h)", 32, 128, 64, step=32)
+    d_val = st.slider("Escolha o valor para d_k e d_v (esperado d_model/h)", 32, 128, 64, step=32, key="p3_slider")
 
     if d_val == 64:
         st.success(f"✅ Correto! Com $d_{{model}}=512$ e $h=8$, então $d_k = d_v = d_{{model}}/h = 512/8 = 64$. ****")
         st.write("Isso permite que o modelo aprenda diferentes representações e foque em diferentes aspectos da sequência, sem aumentar significativamente o custo computacional.")
-        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Multi-Head Attention") # Corrigido: use_container_width
-        if st.button("Avançar para Fase 4 ➡️"):
+        # Mantendo apenas a imagem principal da arquitetura aqui também
+        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Transformer_architecture.svg/800px-Transformer_architecture.svg.png", use_container_width=True, caption="Multi-Head Attention")
+        if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"): # Adicionado key
+            print("Botão 'Avançar para Fase 4' clicado!") # Log para depuração
             st.session_state.game_state = "phase4"
-            st.rerun() # Corrigido para st.rerun()
+            st.rerun()
     else:
         st.warning(f"Tente novamente. Lembre-se que o custo computacional é mantido similar ao de uma única cabeça de atenção com dimensionalidade total.")
         if 'p3_attempts' not in st.session_state: st.session_state.p3_attempts = 0
@@ -149,21 +157,21 @@ def phase4_positional_encoding():
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Embeddings Posicionais Aprendidos"):
+        if st.button("Embeddings Posicionais Aprendidos", key="p4_btn_learned"):
             st.warning("⚠️ O paper experimentou isso, mas encontrou resultados quase idênticos ao método escolhido e optou por outro devido à capacidade de extrapolação para sequências mais longas.")
             if 'p4_attempts' not in st.session_state: st.session_state.p4_attempts = 0
             st.session_state.p4_attempts += 1
     with col2:
-        if st.button("Funções Seno e Cosseno de Diferentes Frequências ✅"):
+        if st.button("Funções Seno e Cosseno de Diferentes Frequências ✅", key="p4_btn_sin_cos"):
             st.success("✅ Correto! O paper usou funções seno e cosseno de diferentes frequências para gerar os encodings posicionais. ****")
             st.write("Cada dimensão do encoding posicional corresponde a uma sinusoide, e isso permite que o modelo aprenda facilmente a atender por posições relativas, pois os encodings formam uma progressão geométrica.")
-            # **NOVA TENTATIVA DE URL PARA A IMAGEM DO POSITIONAL ENCODING**
-            st.image("https://docs.streamlit.io/en/stable/_images/positional_encoding_example.png", use_container_width=True, caption="Positional Encoding: Uma onda para cada posição") # Corrigido: use_container_width e NOVA URL
-            if st.button("Avançar para Fase 5 ➡️"):
+            # **IMAGEM REMOVIDA AQUI, CONFORME SOLICITADO**
+            if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"): # Adicionado key
+                print("Botão 'Avançar para Fase 5' clicado!") # Log para depuração
                 st.session_state.game_state = "phase5"
-                st.rerun() # Corrigido para st.rerun()
+                st.rerun()
     with col3:
-        if st.button("Hash de Posição"):
+        if st.button("Hash de Posição", key="p4_btn_hash"):
             st.error("❌ Incorreto. Essa não foi a técnica utilizada no paper original para o Positional Encoding.")
             if 'p4_attempts' not in st.session_state: st.session_state.p4_attempts = 0
             st.session_state.p4_attempts += 1
@@ -202,9 +210,10 @@ def phase5_training_results():
     st.write("E mais importante, o treinamento foi significativamente mais rápido e mais paralelizado! O *Transformer (base model)*, apesar de menor, já demonstrou um custo de treinamento (FLOPs) muito menor que os outros modelos de ponta. ****")
 
     st.write("Sua missão está completa, engenheiro! Você construiu e otimizou um Transformer com sucesso!")
-    if st.button("Ver Resumo das Descobertas 🏆"):
+    if st.button("Ver Resumo das Descobertas 🏆", key="p5_summary_button"): # Adicionado key
+        print("Botão 'Ver Resumo' clicado!") # Log para depuração
         st.session_state.game_state = "summary"
-        st.rerun() # Corrigido para st.rerun()
+        st.rerun()
     report_bug_section()
 
 
@@ -222,11 +231,12 @@ def game_summary():
     * **Resultados de Ponta (State-of-the-Art):** O Transformer alcançou resultados superiores (BLEU score) em tarefas de tradução automática (WMT 2014 English-to-German e English-to-French), superando modelos anteriores com custos de treinamento menores devido à sua alta paralelização.
     * **Generalização para Outras Tarefas:** O modelo demonstrou a capacidade de generalizar bem para outras tarefas de processamento de linguagem natural, como análise sintática (constituency parsing).
     """)
-    if st.button("Jogar Novamente 🔁"):
+    if st.button("Jogar Novamente 🔁", key="summary_replay_button"): # Adicionado key
+        print("Botão 'Jogar Novamente' clicado!") # Log para depuração
         # Limpa o estado da sessão para reiniciar o jogo
         for key in st.session_state.keys():
             del st.session_state[key]
-        st.rerun() # Corrigido para st.rerun()
+        st.rerun()
     report_bug_section()
 
 def report_bug_section():
@@ -243,7 +253,7 @@ def report_bug_section():
 # Inicializa as variáveis de estado do jogo, se ainda não existirem
 if 'game_state' not in st.session_state:
     st.session_state.game_state = "menu"
-# Inicializa as tentativas de cada fase para evitar KeyError
+# Inicializa as tentativas de cada fase para evitar KeyError (garantindo que existam sempre)
 if 'p1_attempts' not in st.session_state: st.session_state.p1_attempts = 0
 if 'p2_attempts' not in st.session_state: st.session_state.p2_attempts = 0
 if 'p3_attempts' not in st.session_state: st.session_state.p3_attempts = 0
@@ -251,6 +261,7 @@ if 'p4_attempts' not in st.session_state: st.session_state.p4_attempts = 0
 
 
 # Renderiza a fase do jogo com base no estado atual
+print(f"Estado do jogo atual: {st.session_state.game_state}") # Log para depuração
 if st.session_state.game_state == "menu":
     main_menu()
 elif st.session_state.game_state == "phase1":
