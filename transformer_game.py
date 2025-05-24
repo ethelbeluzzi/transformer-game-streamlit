@@ -147,17 +147,27 @@ def phase3_multi_head_attention():
 
     foco = st.selectbox("Palavra de foco (query)", frase, key="p3_query")
 
+    padroes = {
+        "O": ["modelo", "aprende"],
+        "modelo": ["O", "aprende"],
+        "aprende": ["modelo", "relações"],
+        "relações": ["tokens", "entre"],
+        "entre": ["tokens", "relações"],
+        "tokens": ["relações", "entre"]
+    }
+
     st.markdown("🔎 **Cabeça 1** (posição): tende a olhar para palavras próximas da query.")
-    st.markdown("🔎 **Cabeça 2** (concordância verbal): tende a buscar relação com o verbo.")
-    st.markdown("🔎 **Cabeça 3** (semântica): pode focar em substantivos correlatos.")
+    st.markdown("🔎 **Cabeça 2** (concordância estrutural): foca em ligações verbais e dependência.")
+    st.markdown("🔎 **Cabeça 3** (semântica latente): busca palavras semanticamente próximas.")
 
     st.markdown("---")
     st.markdown(f"🧠 Com foco em **{foco}**, veja como cada cabeça pode responder:")
 
-    for i in range(1, 4):
-        st.write(f"**Cabeça {i}:** Atenção distribuída para: ... (simulação textual)")
+    st.write(f"**Cabeça 1:** Atenção distribuída para: {', '.join(padroes.get(foco, []))}")
+    st.write(f"**Cabeça 2:** Atenção distribuída para: {', '.join(padroes.get(foco, [])[::-1])}")
+    st.write(f"**Cabeça 3:** Atenção distribuída para: {', '.join(padroes.get(foco, [])) if foco in padroes else 'nenhuma palavra associada'}")
 
-    st.success("✅ Não há resposta certa ou errada. O importante é entender que diferentes cabeças focam em padrões diferentes simultaneamente.")
+    st.success("✅ Não há resposta certa ou errada. O importante é entender que diferentes cabeças focam em padrões distintos simultaneamente.")
 
     if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"):
         st.session_state.game_state = "phase4"
