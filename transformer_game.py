@@ -56,22 +56,47 @@ def report_bug_section():
             else:
                 st.sidebar.warning("Por favor, escreva algo antes de enviar.")
 
+# --- Função lateral de llms ---
+
+import requests
+def llm_sidebar_consultation():
+    st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para uma LLM!")
+    user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="llm_user_question")
+    if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question:
+        with st.spinner("Consultando a LLM..."):
+            try:
+                # Requisição real ao modelo Mistral-7B no Hugging Face
+                HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
+                headers = {"Content-Type": "application/json"}
+                payload = {
+                    "inputs": f"[INST] {user_question.strip()} [/INST]",
+                    "options": {"wait_for_model": True}
+                }
+
+                response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=20)
+
+                if response.status_code == 200:
+                    result = response.json()
+                    answer = result[0]['generated_text']
+                    st.sidebar.success(f"📘 Resposta da LLM:\n\n{answer}")
+                else:
+                    st.sidebar.error("❌ Erro ao consultar a LLM. Tente novamente mais tarde.")
+            except Exception as e:
+                st.sidebar.error(f"Erro técnico: {e}")
+
 # --- Fase 1: Mini-game de Montagem do Transformer ---
 def phase1_architecture():
     st.header("Fase 1: A Arquitetura Fundacional (Encoder-Decoder) 🏗️")
-    
+
     st.markdown("""
-📘 **Conceito-chave do artigo**:
+> 📘 **Conceito-chave do artigo**  
 > "Nosso modelo segue a arquitetura geral do transformador como uma pilha de camadas de codificador e decodificador."  
-(Vaswani et al., 2017)
+> — *Vaswani et al., 2017*
 
 A arquitetura Encoder-Decoder permite que o modelo processe a entrada por completo antes de gerar a saída, otimizando tarefas como tradução, resumo e question answering.
-
-🔬 **Além do artigo**:
-Modelos como T5, BART e muitos sistemas de tradução neural atuais usam variantes dessa arquitetura. Essa separação entre codificação e decodificação facilita transfer learning e modularidade.
     """)
 
-    st.write("Arraste os blocos abaixo para a ordem correta da arquitetura Transformer: de entrada até a saída.")
+    st.write("Arraste os blocos abaixo para a ordem correta da arquitetura Transformer: da entrada até a saída.")
 
     componentes = [
         "Mecanismo de Atenção",
@@ -115,6 +140,13 @@ Modelos como T5, BART e muitos sistemas de tradução neural atuais usam variant
             st.session_state.show_phase1_feedback = False
             st.rerun()
 
+    st.markdown("""
+> 🔬 **Além do artigo**  
+> Modelos como **T5**, **BART** e muitos sistemas modernos de tradução neural usam variantes dessa arquitetura.  
+> A separação clara entre codificação e decodificação facilita o **aprendizado transferido (transfer learning)**, a modularização e a adaptação para tarefas distintas — como sumarização, diálogo e até geração de código.
+    """)
+
+    llm_sidebar_consultation()
     report_bug_section()
 
 # --- Fase 2 ---
