@@ -150,7 +150,7 @@ A arquitetura Encoder-Decoder permite que o modelo processe a entrada por comple
     report_bug_section()
 
 # --- Fase 2 ---
-      def phase2_scaled_dot_product_attention():
+def phase2_scaled_dot_product_attention():
     st.header("Fase 2: Corrida de Vetores e Escalonamento 🎯")
 
     st.markdown("""
