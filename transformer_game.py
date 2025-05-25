@@ -63,7 +63,7 @@ import requests
 
 def llm_sidebar_consultation():
      # 🔼 Imagem no topo do sidebar
-    st.sidebar.image("img/image_sidebar.jpg", use_column_width=True)
+    st.sidebar.image("img/image_sidebar.jpg", use_container_width=True)
 
     # 🔻 Linha divisória abaixo da imagem
     st.sidebar.markdown("---")
