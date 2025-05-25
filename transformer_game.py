@@ -60,26 +60,43 @@ def report_bug_section():
 
 from huggingface_hub import InferenceClient
 
-def llm_sidebar_consultation():
-    st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para uma LLM!")
-    user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="llm_user_question")
+import requests
 
-    if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question.strip():
-        with st.spinner("Consultando a LLM..."):
+def llm_sidebar_consultation():
+    st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para a LLM (via Hugging Face Router API)")
+    user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="hf_chat_user_question")
+
+    if st.sidebar.button("Enviar pergunta", key="hf_chat_submit") and user_question.strip():
+        with st.spinner("Consultando o modelo Qwen2.5..."):
             try:
                 hf_token = st.secrets["HF_TOKEN"]
-                client = InferenceClient(api_key=hf_token)
+                headers = {
+                    "Authorization": f"Bearer {hf_token}",
+                    "Content-Type": "application/json"
+                }
 
-                model_id = "tiiuae/falcon-rw-1b"  # modelo gratuito, confirmado ativo
-                resposta = client.text_generation(
-                    prompt=user_question.strip(),
-                    model=model_id,
-                    max_new_tokens=150,
-                    temperature=0.7
-                )
+                API_URL = "https://router.huggingface.co/together/v1/chat/completions"
+                payload = {
+                    "model": "Qwen/Qwen2.5-7B-Instruct-Turbo",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": user_question.strip()
+                        }
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 300
+                }
 
-                st.sidebar.success("📘 Resposta da LLM:")
-                st.sidebar.markdown(f"> {resposta.strip()}")
+                response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+
+                if response.status_code == 200:
+                    result = response.json()
+                    reply = result["choices"][0]["message"]["content"]
+                    st.sidebar.success("📘 Resposta da LLM:")
+                    st.sidebar.markdown(f"> {reply.strip()}")
+                else:
+                    st.sidebar.error(f"❌ Erro {response.status_code}: {response.text}")
 
             except Exception as e:
                 st.sidebar.error(f"❌ Erro técnico: {e}")
