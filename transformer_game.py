@@ -59,9 +59,6 @@ def report_bug_section():
 # --- Função lateral de llms ---
 
 from huggingface_hub import InferenceClient
-
-import requests
-
 import requests
 
 def llm_sidebar_consultation():
@@ -111,6 +108,10 @@ def llm_sidebar_consultation():
     # 🔽 Adiciona separador entre a LLM e a caixa de feedback de erro conceitual
     st.sidebar.markdown("---")
 
+# --- Função da imagem inicial ---
+def sidebar_inicial():
+    st.sidebar.image("img/image_sidebar.jpg", use_column_width=True)
+    st.sidebar.markdown("---")
 
 # --- Fase 1: Mini-game de Montagem do Transformer ---
 def phase1_architecture():
@@ -526,7 +527,9 @@ No canto lateral esquerdo, você pode:
     if st.button("Iniciar Missão ➡️"):
         st.session_state.game_state = "phase1"
         st.rerun()
-    report_bug_section()
+        
+    # 🔽 Mostra a imagem no sidebar da página inicial
+    sidebar_inicial()
 
 # --- Navegação ---
 fases_nomes = {
