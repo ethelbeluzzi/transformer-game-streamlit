@@ -68,16 +68,18 @@ def llm_sidebar_consultation():
         with st.spinner("Consultando a LLM..."):
             try:
                 hf_token = st.secrets["HF_TOKEN"]
-                client = InferenceClient(
-                    provider="hf-inference",
-                    api_key=hf_token
+                client = InferenceClient(api_key=hf_token)
+
+                model_id = "tiiuae/falcon-rw-1b"  # modelo gratuito, confirmado ativo
+                resposta = client.text_generation(
+                    prompt=user_question.strip(),
+                    model=model_id,
+                    max_new_tokens=150,
+                    temperature=0.7
                 )
 
-                # Aqui você escolhe o modelo e o método:
-                model_id = "tiiuae/falcon-rw-1b"
-                resposta = client.text_generation(prompt=user_question.strip(), model=model_id)
-
-                st.sidebar.success(f"📘 Resposta da LLM:\n\n{resposta}")
+                st.sidebar.success("📘 Resposta da LLM:")
+                st.sidebar.markdown(f"> {resposta.strip()}")
 
             except Exception as e:
                 st.sidebar.error(f"❌ Erro técnico: {e}")
