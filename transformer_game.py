@@ -102,6 +102,9 @@ def llm_sidebar_consultation():
             except Exception as e:
                 st.sidebar.error("❌ Ocorreu um erro técnico ao tentar se conectar à LLM.")
 
+    # 🔽 Adiciona separador entre a LLM e a caixa de feedback de erro conceitual
+    st.sidebar.markdown("---")
+
 
 # --- Fase 1: Mini-game de Montagem do Transformer ---
 def phase1_architecture():
