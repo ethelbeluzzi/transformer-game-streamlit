@@ -229,6 +229,7 @@ A arquitetura Encoder-Decoder permite que o modelo processe a entrada por comple
 
     llm_sidebar_consultation()
     report_bug_section()
+    diagnosticar_llm_api(modelo, prompt)
 
 # --- Fase 2 ---
 def phase2_scaled_dot_product_attention():
