@@ -142,11 +142,11 @@ A arquitetura Encoder-Decoder permite que o modelo processe a entrada por comple
     ]
 
     dicas = [
-        "Posição 1 - **Embedding**: transforma cada palavra em um vetor numérico compreensível pela IA.",
-        "Posição 2 - **Encoder**: processa a frase de entrada e gera uma representação contextualizada.",
-        "Posição 3 - **Mecanismo de Atenção**: decide quais palavras são mais importantes umas para as outras.",
-        "Posição 4 - **Decoder**: gera a frase de saída, com base na atenção e no encoder.",
-        "Posição 5 - **Camada de Saída**: traduz a saída do decoder para palavras compreensíveis."
+        "Posição 1 - Transforma cada palavra em um vetor numérico compreensível pela IA.",
+        "Posição 2 - Processa a frase de entrada e gera uma representação contextualizada.",
+        "Posição 3 - Decide quais palavras são mais importantes umas para as outras.",
+        "Posição 4 - Gera a frase de saída, com base na atenção e no encoder.",
+        "Posição 5 - Traduz a saída do decoder para palavras compreensíveis."
     ]
 
     escolhas = []
