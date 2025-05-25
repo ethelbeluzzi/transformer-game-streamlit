@@ -65,7 +65,7 @@ import requests
 import requests
 
 def llm_sidebar_consultation():
-    st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para a LLM!")
+    st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para a LLM! (Qwen2.5-7B-Instruct, via Hugging Face)")
     user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="hf_chat_user_question")
 
     if st.sidebar.button("Enviar pergunta", key="hf_chat_submit") and user_question.strip():
