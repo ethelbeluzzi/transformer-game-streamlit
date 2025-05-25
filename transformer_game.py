@@ -110,7 +110,7 @@ def llm_sidebar_consultation():
 
 # --- Função da imagem inicial ---
 def sidebar_inicial():
-    st.sidebar.image("img/image_sidebar.jpg", use_column_width=True)
+    st.sidebar.image("img/image_sidebar.jpg", use_container_width=True)
     st.sidebar.markdown("---")
 
 # --- Fase 1: Mini-game de Montagem do Transformer ---
