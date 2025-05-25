@@ -496,7 +496,7 @@ def game_summary():
 # --- Menu Inicial ---
 def main_menu():
     st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀")
-    st.write("Bem-vindo, engenheiro de inteligência artificial! Sua missão é guiar um modelo Transformer por cinco fases...")
+    st.write("Esse é um jogo pensado para ajudar a rever os principais conceitos do paper *Attention is All You Need*. [Leia o paper original](https://arxiv.org/abs/1706.03762). Vamos lá?")
     try:
         st.image("img/transformer.png", width=200)
     except:
