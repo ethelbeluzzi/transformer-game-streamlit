@@ -404,24 +404,29 @@ A arquitetura baseada em atenção pura permite paralelismo eficiente e melhora 
     }
     st.table(data)
 
-    # 🔝 Mini ranking
-    if st.button("🔝 Destacar o melhor modelo"):
-        st.info("🏆 **Transformer (big)** se destaca com **BLEU 28.4** e excelente desempenho em tradução automática!")
+    st.subheader("🔍 Qual modelo você considera o melhor?")
+
+    escolha = st.radio("Clique em um modelo para destacá-lo:", options=[
+        "ByteNet", "GNMT + RL", "ConvS2S", "Transformer (base)", "Transformer (big)"
+    ], key="fase5_escolha")
+
+    if escolha:
+        if escolha == "Transformer (big)":
+            st.success("🏆 Exatamente! O **Transformer (big)** se destacou em desempenho (BLEU 28.4) com ótimo custo-benefício.")
+            if st.button("Ver Resumo Final 🏆", key="p5_summary_button"):
+                st.session_state.game_state = "summary"
+                st.rerun()
+        else:
+            st.warning(f"⚠️ O modelo **{escolha}** teve resultados razoáveis, mas não foi o melhor no balanço entre BLEU e FLOPs. Tente observar novamente a tabela!")
 
     st.markdown("""
 > 🔬 **Além do artigo**  
 > O BLEU Score é uma métrica baseada em n-gramas que compara a saída gerada com traduções humanas.  
 > - Um aumento de **2 BLEU** pode representar uma diferença **perceptível na fluência e precisão**.  
 > - O Transformer não só superou modelos anteriores, mas o fez com muito **menos custo de FLOPs**.  
-
-Isso abriu caminho para aplicações em tempo real, como tradução simultânea, assistentes virtuais multilíngues e até geração de código (com adaptações).
+>  
+> Isso abriu caminho para aplicações em tempo real, como tradução simultânea, assistentes virtuais multilíngues e até geração de código (com adaptações).
     """)
-
-    st.success("🚀 Sua missão foi cumprida com sucesso: você treinou um Transformer de ponta!")
-
-    if st.button("Ver Resumo Final 🏆", key="p5_summary_button"):
-        st.session_state.game_state = "summary"
-        st.rerun()
 
     llm_sidebar_consultation()
     report_bug_section()
