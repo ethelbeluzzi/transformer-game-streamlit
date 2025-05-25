@@ -313,15 +313,16 @@ def phase4_positional_encoding():
 Transformers não têm noção da ordem das palavras por si só. Por isso, adicionam vetores senoidais que representam a posição de cada token na sequência.
 """)
 
-    st.write("O que o Positional Encoding ajuda o modelo a entender?")
-    resposta = st.radio("Escolha a alternativa correta:", [
+    opcoes = [
         "A importância semântica de cada palavra",
         "A ordem e a distância entre os tokens",
         "A classe gramatical de cada palavra",
         "A frequência com que o token aparece nos dados"
-    ], index=-1, key="fase4_radio")
+    ]
 
-    if resposta:
+    resposta = st.radio("Escolha a alternativa correta:", options=["⬇️ Selecione uma opção"] + opcoes, key="fase4_radio")
+
+    if resposta != "⬇️ Selecione uma opção":
         if resposta == "A ordem e a distância entre os tokens":
             st.success("✅ Correto! O Positional Encoding insere informação de posição para que o modelo saiba 'onde' cada token está.")
             if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"):
