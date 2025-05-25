@@ -95,6 +95,75 @@ def llm_sidebar_consultation():
             except Exception as e:
                 st.sidebar.error(f"Erro técnico: {e}")
 
+import time
+import requests
+import streamlit as st
+
+def diagnosticar_llm_api(model_url: str, prompt: str):
+    st.subheader("🧪 Diagnóstico da API Hugging Face")
+
+    # 1. Validar Token
+    try:
+        hf_token = st.secrets["HF_TOKEN"]
+        st.write("✅ Token carregado com sucesso.")
+    except KeyError:
+        st.error("❌ Token não encontrado em `st.secrets`. Verifique se `HF_TOKEN` está definido.")
+        return
+
+    # 2. Montar Requisição
+    headers = {
+        "Authorization": f"Bearer {hf_token}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "inputs": prompt.strip(),
+        "options": {"wait_for_model": True}
+    }
+
+    st.write(f"🔗 Endpoint a ser testado: `{model_url}`")
+    st.write(f"📨 Prompt: `{prompt}`")
+
+    # 3. Enviar Requisição
+    try:
+        start = time.time()
+        response = requests.post(model_url, headers=headers, json=payload, timeout=30)
+        duration = time.time() - start
+
+        st.write(f"⏱️ Tempo de resposta: {duration:.2f} segundos")
+        st.write(f"📦 Código HTTP: {response.status_code}")
+
+        # 4. Diagnóstico detalhado
+        if response.status_code == 200:
+            try:
+                json_response = response.json()
+                st.success("✅ Resposta recebida com sucesso!")
+                st.json(json_response)
+                if isinstance(json_response, list) and "generated_text" in json_response[0]:
+                    st.markdown(f"### 📘 Resposta Gerada:\n\n> {json_response[0]['generated_text']}")
+                else:
+                    st.warning("⚠️ Formato inesperado da resposta.")
+            except Exception as e:
+                st.error(f"❌ Erro ao interpretar JSON da resposta: {e}")
+        elif response.status_code == 404:
+            st.error("❌ Erro 404: Modelo não encontrado ou não disponível via Inference API.")
+            st.info("💡 Verifique se o nome do modelo está correto e se ele exibe a tag 'This model can be loaded on the Inference API'.")
+        elif response.status_code == 401:
+            st.error("❌ Erro 401: Token inválido ou expirado.")
+            st.info("💡 Verifique seu token na página https://huggingface.co/settings/tokens.")
+        else:
+            st.error(f"❌ Erro {response.status_code}: {response.text}")
+
+    except requests.exceptions.Timeout:
+        st.error("❌ Timeout: A requisição levou muito tempo.")
+    except Exception as e:
+        st.error(f"❌ Erro técnico: {e}")
+
+with st.sidebar.expander("⚙️ Diagnóstico da API LLM"):
+    modelo = st.text_input("URL do modelo (API URL)", value="https://api-inference.huggingface.co/models/tiiuae/falcon-rw-1b")
+    prompt = st.text_area("Prompt de teste", value="Explique o mecanismo de atenção escalonada em Transformers.")
+    if st.button("Executar Diagnóstico"):
+        diagnosticar_llm_api(modelo, prompt)
 
 # --- Fase 1: Mini-game de Montagem do Transformer ---
 def phase1_architecture():
