@@ -510,7 +510,7 @@ No canto lateral esquerdo, você pode:
     # 🔽 Centralizar imagem com layout de colunas
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image("img/transformer.png", use_column_width=True)
+        st.image("img/transformer.png", use_container_width=True)
 
     if st.button("Iniciar Missão ➡️"):
         st.session_state.game_state = "phase1"
