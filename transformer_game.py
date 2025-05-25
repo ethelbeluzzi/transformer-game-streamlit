@@ -404,13 +404,17 @@ A arquitetura baseada em atenção pura permite paralelismo eficiente e melhora 
     }
     st.table(data)
 
+    # 🔝 Mini ranking
+    if st.button("🔝 Destacar o melhor modelo"):
+        st.info("🏆 **Transformer (big)** se destaca com **BLEU 28.4** e excelente desempenho em tradução automática!")
+
     st.markdown("""
 > 🔬 **Além do artigo**  
 > O BLEU Score é uma métrica baseada em n-gramas que compara a saída gerada com traduções humanas.  
 > - Um aumento de **2 BLEU** pode representar uma diferença **perceptível na fluência e precisão**.  
 > - O Transformer não só superou modelos anteriores, mas o fez com muito **menos custo de FLOPs**.  
->  
-> Isso abriu caminho para aplicações em tempo real, como tradução simultânea, assistentes virtuais multilíngues e até geração de código (com adaptações).
+
+Isso abriu caminho para aplicações em tempo real, como tradução simultânea, assistentes virtuais multilíngues e até geração de código (com adaptações).
     """)
 
     st.success("🚀 Sua missão foi cumprida com sucesso: você treinou um Transformer de ponta!")
@@ -421,6 +425,7 @@ A arquitetura baseada em atenção pura permite paralelismo eficiente e melhora 
 
     llm_sidebar_consultation()
     report_bug_section()
+
 
 # --- Resumo Final + LLM ---
 def game_summary():
