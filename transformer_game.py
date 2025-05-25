@@ -58,7 +58,8 @@ def report_bug_section():
 
 # --- Função lateral de llms ---
 
-import requests
+from huggingface_hub import InferenceClient
+
 def llm_sidebar_consultation():
     st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para uma LLM!")
     user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="llm_user_question")
@@ -66,34 +67,20 @@ def llm_sidebar_consultation():
     if st.sidebar.button("Enviar pergunta à LLM", key="llm_submit_button") and user_question.strip():
         with st.spinner("Consultando a LLM..."):
             try:
-                HF_API_URL = "https://api-inference.huggingface.co/models/mrm8488/t5-base-finetuned-question-generation-ap"
                 hf_token = st.secrets["HF_TOKEN"]
+                client = InferenceClient(
+                    provider="hf-inference",
+                    api_key=hf_token
+                )
 
-                headers = {
-                    "Authorization": f"Bearer {hf_token}",
-                    "Content-Type": "application/json"
-                }
+                # Aqui você escolhe o modelo e o método:
+                model_id = "tiiuae/falcon-rw-1b"
+                resposta = client.text_generation(prompt=user_question.strip(), model=model_id)
 
-                payload = {
-                    "inputs": user_question.strip(),
-                    "options": {"wait_for_model": True}
-                }
-
-                response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=30)
-
-                if response.status_code == 200:
-                    result = response.json()
-                    # Verifica estrutura esperada
-                    if isinstance(result, list) and "generated_text" in result[0]:
-                        answer = result[0]["generated_text"]
-                    else:
-                        answer = str(result)
-                    st.sidebar.success(f"📘 Resposta da LLM:\n\n{answer}")
-                else:
-                    st.sidebar.error(f"Erro {response.status_code}: {response.text}")
+                st.sidebar.success(f"📘 Resposta da LLM:\n\n{resposta}")
 
             except Exception as e:
-                st.sidebar.error(f"Erro técnico: {e}")
+                st.sidebar.error(f"❌ Erro técnico: {e}")
 
 import time
 import requests
