@@ -306,61 +306,65 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def phase4_positional_encoding():
-    st.header("Fase 4: Positional Encoding 🌐")
+    st.header("Fase 4: Codificação Posicional (Positional Encoding) 🌐")
 
     st.markdown("""
 > 📘 **Conceito-chave do artigo**  
-> "Como não usamos recorrência, adicionamos vetores de codificação posicional para injetar informação de ordem nas sequências."  
+> “Como o modelo não possui mecanismos recorrentes ou convolucionais, é necessário incorporar alguma informação sobre a ordem das palavras na sequência. Para isso, usamos funções senoidais que variam com a posição.”  
 > — *Vaswani et al., 2017*
 
-Transformers não têm noção da ordem das palavras por si só. Por isso, adicionam vetores senoidais que representam a posição de cada token na sequência.
+Transformers não têm noção da ordem dos tokens por padrão. Para isso, adicionam aos embeddings vetores de **codificação posicional** — combinações de seno e cosseno — que representam a posição de cada palavra na sequência.
+
+Essas funções produzem padrões contínuos e diferenciáveis, permitindo que o modelo:
+- Reconheça a **posição absoluta** dos tokens
+- Codifique **relações de distância** entre palavras
+- **Extrapole** para comprimentos de sequência maiores que os vistos no treino
 """)
 
-    # Visualização dos padrões seno e cosseno
-    st.subheader("Visualização: Codificação Posicional")
+    st.subheader("🔢 Visualização: Senoides para representar posições")
+
     posicoes = np.arange(0, 50)
-    dim = 16
+    dim = 16  # Exemplo com 16 dimensões
     pos_enc = np.array([
-        [np.sin(p / (10000**(2*i/dim))) if i % 2 == 0 else np.cos(p / (10000**(2*(i-1)/dim))) for i in range(dim)]
+        [np.sin(p / (10000 ** (2 * i / dim))) if i % 2 == 0 else np.cos(p / (10000 ** (2 * (i - 1) / dim))) for i in range(dim)]
         for p in posicoes
     ])
 
     fig, ax = plt.subplots(figsize=(8, 3))
-    ax.plot(posicoes, pos_enc[:, 0], label='Dimensão 0 (seno)')
-    ax.plot(posicoes, pos_enc[:, 1], label='Dimensão 1 (cosseno)')
-    ax.set_title("Padrão senoidal das primeiras dimensões do Positional Encoding")
+    ax.plot(posicoes, pos_enc[:, 0], label="Dimensão 0 (seno)")
+    ax.plot(posicoes, pos_enc[:, 1], label="Dimensão 1 (cosseno)")
+    ax.set_title("Variação senoidal em duas dimensões do Positional Encoding")
     ax.set_xlabel("Posição do token")
     ax.legend()
     st.pyplot(fig)
 
-    # Pergunta com opção errada como default
-    opcoes = [
-        "A importância semântica de cada palavra",  # <- selecionada por padrão
-        "A ordem e a distância entre os tokens",
-        "A classe gramatical de cada palavra",
-        "A frequência com que o token aparece nos dados"
-    ]
+    st.markdown("Acima, vemos como diferentes dimensões oscilam de forma distinta conforme a posição muda. Isso cria um **padrão único** por posição, que pode ser aprendido pelo modelo.")
 
-    resposta = st.radio("O que o Positional Encoding ajuda o modelo a entender?", options=opcoes, index=0, key="fase4_radio")
+    st.subheader("🧠 Pergunta")
+    resposta = st.radio("O que o Positional Encoding permite ao Transformer?", [
+        "Capturar a importância semântica das palavras",
+        "Aprender a ordem e a distância entre os tokens",
+        "Entender a frequência de cada palavra",
+        "Ignorar a posição, já que a atenção cuida disso"
+    ], index=0, key="fase4_radio")
 
     if resposta:
-        if resposta == "A ordem e a distância entre os tokens":
-            st.success("✅ Correto! O Positional Encoding insere informação de posição para que o modelo saiba 'onde' cada token está.")
+        if resposta == "Aprender a ordem e a distância entre os tokens":
+            st.success("✅ Correto! O Positional Encoding insere padrões que permitem ao modelo saber quem vem antes ou depois, e quão longe cada palavra está da outra.")
             if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"):
                 st.session_state.game_state = "phase5"
                 st.rerun()
         else:
-            st.error("❌ Não exatamente. Lembre-se que o Positional Encoding trata da ordem das palavras, não de suas características semânticas ou gramaticais.")
+            st.error("❌ Ainda não! Lembre-se: o objetivo do Positional Encoding é oferecer ao modelo uma forma de representar a **ordem e distância** entre tokens — algo que, sozinho, a atenção não captura.")
 
     st.markdown("""
 > 🔬 **Além do artigo**  
-> O uso de funções senoidais permite que o modelo:  
-> - Extrapole para sequências mais longas  
-> - Saiba se um token vem antes ou depois de outro  
-> - Capte padrões rítmicos e espaciais
-
-Essa ideia foi tão poderosa que muitos modelos modernos — como BERT, T5 e GPT — mantêm versões dela (ou variantes como embeddings aprendíveis).
-""")
+> Muitos modelos modernos (como BERT e GPT) usam variantes de codificação posicional:  
+> - **Fixas** (como seno/cosseno) → extrapolam para posições além do treino  
+> - **Aprendidas** → mais flexíveis, mas menos interpretáveis  
+>  
+> A codificação posicional continua sendo uma das maiores inovações dos Transformers — e uma das razões para sua escalabilidade.
+    """)
 
     llm_sidebar_consultation()
     report_bug_section()
