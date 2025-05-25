@@ -65,6 +65,12 @@ import requests
 import requests
 
 def llm_sidebar_consultation():
+     # 🔼 Imagem no topo do sidebar
+    st.sidebar.image("img/image_sidebar.jpg", use_column_width=True)
+
+    # 🔻 Linha divisória abaixo da imagem
+    st.sidebar.markdown("---")
+    
     st.sidebar.subheader("🤖 Tem alguma dúvida? Pergunte aqui para a LLM! (Qwen2.5-7B-Instruct, via Hugging Face)")
     user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="hf_chat_user_question")
 
