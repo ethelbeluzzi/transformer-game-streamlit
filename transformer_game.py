@@ -498,7 +498,7 @@ def main_menu():
     st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀")
 
     st.write("""
-Esse é um jogo interativo pensado para ajudar você a revisar, de forma leve e engajada, os principais conceitos do paper clássico *Attention is All You Need*. [Leia o paper original](https://arxiv.org/abs/1706.03762). Vamos lá?
+Esse é um jogo interativo pensado para ajudar você a revisar, de forma leve e engajada, os principais conceitos do paper clássico *Attention is All You Need*. [Leia o paper original](https://arxiv.org/abs/1706.03762).
 
 Durante o jogo, você será guiado por cinco fases, cada uma com um mini-desafio sobre aspectos fundamentais do Transformer: arquitetura, atenção escalonada, atenção multi-cabeça, codificação posicional e resultados de desempenho.
 
