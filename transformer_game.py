@@ -444,6 +444,13 @@ A arquitetura baseada em atenção pura permite paralelismo eficiente e melhora 
 # --- Resumo Final + LLM ---
 def game_summary():
     st.header("Missão Concluída! Recapitulação do artigo 'Attention Is All You Need' 🎉")
+
+    # 🔽 Exibe imagem final centralizada
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image("img/imagem_final.png", use_container_width=True)
+    st.markdown("---")
+
     st.subheader("🧠 Você demonstrou uma compreensão sólida dos fundamentos do Transformer!")
 
     st.markdown("""
