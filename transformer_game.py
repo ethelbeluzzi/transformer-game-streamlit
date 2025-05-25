@@ -530,6 +530,7 @@ No canto lateral esquerdo, você pode:
         
     # 🔽 Mostra a imagem no sidebar da página inicial
     sidebar_inicial()
+    report_bug_section()
 
 # --- Navegação ---
 fases_nomes = {
