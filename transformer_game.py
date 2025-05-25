@@ -68,8 +68,7 @@ def llm_sidebar_consultation():
     # 🔻 Linha divisória abaixo da imagem
     st.sidebar.markdown("---")
     
-    st.sidebar.markdown("🤖 **Tem alguma dúvida?**")
-    st.sidebar.markdown("Pergunte aqui para a LLM!")
+    st.sidebar.markdown("🤖 **Tem alguma dúvida?** Pergunte aqui para a LLM!")
     st.sidebar.markdown("_Qwen2.5-7B-Instruct, via Hugging Face_")
 
     user_question = st.sidebar.text_area("Digite sua dúvida abaixo:", key="hf_chat_user_question")
