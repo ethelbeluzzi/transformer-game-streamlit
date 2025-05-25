@@ -504,7 +504,7 @@ Esse é um jogo interativo pensado para ajudar você a revisar e compreender, de
 📚 Ao longo de cinco fases, você vai explorar os elementos essenciais da arquitetura Transformer:  
 Encoder-Decoder, Atenção Escalonada, Multi-Head Attention, Positional Encoding e Eficiência de Treinamento.
 
-🧠 Precisa de ajuda durante o jogo? Use a barrinha lateral para tirar dúvidas diretamente com uma LLM (modelo de linguagem treinado para responder suas perguntas)!  
+🧠 Precisa de ajuda durante o jogo? Use a barrinha lateral para tirar dúvidas diretamente com um LLM!  
 
 🐞 Encontrou algo estranho ou cometeu um erro conceitual? Utilize a caixinha de feedback na lateral para nos avisar.
 
@@ -520,7 +520,18 @@ Vamos lá? Clique abaixo para iniciar sua missão!
     report_bug_section()
 
 # --- Navegação ---
-st.write(f"🧭 Estado atual: {st.session_state.game_state}")
+fases_nomes = {
+    "menu": "Menu Inicial",
+    "phase1": "Fase 1",
+    "phase2": "Fase 2",
+    "phase3": "Fase 3",
+    "phase4": "Fase 4",
+    "phase5": "Fase 5",
+    "summary": "Resumo Final"
+}
+estado_legivel = fases_nomes.get(st.session_state.game_state, "Desconhecido")
+st.write(f"🧭 Estado atual: {estado_legivel}")
+
 if st.session_state.game_state == "menu":
     main_menu()
 elif st.session_state.game_state == "phase1":
