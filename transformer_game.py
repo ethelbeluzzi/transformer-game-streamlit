@@ -302,78 +302,47 @@ A Multi-Head Attention permite que o Transformer olhe para a mesma informação 
     report_bug_section()
 
 # --- Fase 4 ---
-def phase3_multi_head_attention():
-    st.header("Fase 3: Multi-Head Attention: Cabeças Paralelas 🧠")
+def phase4_positional_encoding():
+    st.header("Fase 4: Positional Encoding 🌐")
 
     st.markdown("""
 > 📘 **Conceito-chave do artigo**  
-> "Ao invés de uma única atenção com vetores de dimensão dₘₒdₑₗ, projetamos Q, K, V múltiplas vezes (h cabeças) para subespaços menores, permitindo que o modelo atenda simultaneamente a diferentes informações de diferentes posições."  
+> "Como não usamos recorrência, adicionamos vetores de codificação posicional para injetar informação de ordem nas sequências."  
 > — *Vaswani et al., 2017*
 
-A Multi-Head Attention permite que o Transformer olhe para a mesma informação de diversas maneiras simultaneamente, aprendendo padrões variados entre tokens.
-    """)
+Transformers não têm noção da ordem das palavras por si só. Por isso, adicionam vetores senoidais que representam a posição de cada token na sequência.
+""")
 
-    frase = ["O", "modelo", "aprende", "relações", "entre", "tokens"]
-    st.write("Escolha uma palavra para observar como diferentes cabeças podem reagir a ela:")
+    st.write("O que o Positional Encoding ajuda o modelo a entender?")
+    resposta = st.radio("Escolha a alternativa correta:", [
+        "A importância semântica de cada palavra",
+        "A ordem e a distância entre os tokens",
+        "A classe gramatical de cada palavra",
+        "A frequência com que o token aparece nos dados"
+    ], index=-1, key="fase4_radio")
 
-    foco = st.selectbox("Palavra de foco (query)", frase, key="p3_query")
-
-    padroes_cabeca1 = {
-        "O": ["modelo"],
-        "modelo": ["O", "aprende"],
-        "aprende": ["modelo"],
-        "relações": ["entre"],
-        "entre": ["relações"],
-        "tokens": ["entre"]
-    }
-
-    padroes_cabeca2 = {
-        "O": ["aprende"],
-        "modelo": ["relações"],
-        "aprende": ["tokens"],
-        "relações": ["modelo"],
-        "entre": ["aprende"],
-        "tokens": ["O"]
-    }
-
-    padroes_cabeca3 = {
-        "O": ["O"],
-        "modelo": ["tokens"],
-        "aprende": ["relações"],
-        "relações": ["tokens"],
-        "entre": ["modelo"],
-        "tokens": ["relações"]
-    }
-
-    st.markdown("🔎 **Cabeça 1** (posição local): tende a olhar para palavras vizinhas.")
-    st.markdown("🔎 **Cabeça 2** (ligação estrutural): conecta palavras com dependência gramatical.")
-    st.markdown("🔎 **Cabeça 3** (semântica implícita): foca em termos semanticamente relacionados.")
-
-    st.markdown("---")
-    st.markdown(f"🧠 Com foco em **{foco}**, veja como cada cabeça pode responder:")
-
-    st.write(f"**Cabeça 1:** Atenção distribuída para: {', '.join(padroes_cabeca1.get(foco, []))}")
-    st.write(f"**Cabeça 2:** Atenção distribuída para: {', '.join(padroes_cabeca2.get(foco, []))}")
-    st.write(f"**Cabeça 3:** Atenção distribuída para: {', '.join(padroes_cabeca3.get(foco, []))}")
-
-    st.success("✅ Observe como diferentes cabeças focam em padrões distintos — essa diversidade é essencial para que o modelo compreenda múltiplas relações contextuais ao mesmo tempo.")
-
-    if st.button("Avançar para Fase 4 ➡️", key="p3_advance_button"):
-        st.session_state.game_state = "phase4"
-        st.rerun()
+    if resposta:
+        if resposta == "A ordem e a distância entre os tokens":
+            st.success("✅ Correto! O Positional Encoding insere informação de posição para que o modelo saiba 'onde' cada token está.")
+            if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"):
+                st.session_state.game_state = "phase5"
+                st.rerun()
+        else:
+            st.error("❌ Não exatamente. Lembre-se que o Positional Encoding trata da ordem das palavras, não de suas características semânticas ou gramaticais.")
 
     st.markdown("""
 > 🔬 **Além do artigo**  
-> Em modelos maiores como **GPT-3 ou PaLM**, o número de cabeças cresce (ex: 96 ou mais).  
-> Cada uma aprende de forma independente:  
-> - Algumas especializam-se em pontuação, outras em coesão, ou em longas dependências sintáticas.  
-> - A diversidade entre cabeças é essencial para tarefas como sumarização, programação, tradução ou raciocínio matemático.  
->  
-> Mesmo cabeças com desempenho fraco isoladamente podem ser úteis dentro do conjunto.
-    """)
+> O uso de funções senoidais permite que o modelo:  
+> - Extrapole para sequências mais longas  
+> - Saiba se um token vem antes ou depois de outro  
+> - Capte padrões rítmicos e espaciais
+
+Essa ideia foi tão poderosa que muitos modelos modernos — como BERT, T5 e GPT — mantêm versões dela (ou variantes como embeddings aprendíveis).
+""")
 
     llm_sidebar_consultation()
     report_bug_section()
+
 
 # --- Fase 5 ---
 def phase5_training_results():
