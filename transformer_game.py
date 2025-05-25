@@ -24,9 +24,15 @@ from github import Github
 import datetime
 import streamlit as st
 
+import html
+
 def log_feedback(feedback_text):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    full_text = f"[{timestamp}] {feedback_text}\n"
+    
+    # Sanitiza o texto antes de salvar
+    safe_text = html.escape(feedback_text)
+    
+    full_text = f"[{timestamp}] {safe_text}\n"
 
     token = st.secrets["GITHUB_TOKEN"]
     repo_name = st.secrets["REPO_NAME"]
