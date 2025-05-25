@@ -448,7 +448,7 @@ def game_summary():
     # 🔽 Exibe imagem final centralizada
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image("img/imagem_final.png", use_container_width=True)
+        st.image("img/imagem_final.jpg", use_container_width=True)
     st.markdown("---")
 
     st.subheader("🧠 Você demonstrou uma compreensão sólida dos fundamentos do Transformer!")
