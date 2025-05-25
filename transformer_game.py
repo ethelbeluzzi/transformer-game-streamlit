@@ -302,6 +302,9 @@ A Multi-Head Attention permite que o Transformer olhe para a mesma informação 
     report_bug_section()
 
 # --- Fase 4 ---
+import numpy as np
+import matplotlib.pyplot as plt
+
 def phase4_positional_encoding():
     st.header("Fase 4: Positional Encoding 🌐")
 
@@ -313,16 +316,34 @@ def phase4_positional_encoding():
 Transformers não têm noção da ordem das palavras por si só. Por isso, adicionam vetores senoidais que representam a posição de cada token na sequência.
 """)
 
+    # Visualização dos padrões seno e cosseno
+    st.subheader("Visualização: Codificação Posicional")
+    posicoes = np.arange(0, 50)
+    dim = 16
+    pos_enc = np.array([
+        [np.sin(p / (10000**(2*i/dim))) if i % 2 == 0 else np.cos(p / (10000**(2*(i-1)/dim))) for i in range(dim)]
+        for p in posicoes
+    ])
+
+    fig, ax = plt.subplots(figsize=(8, 3))
+    ax.plot(posicoes, pos_enc[:, 0], label='Dimensão 0 (seno)')
+    ax.plot(posicoes, pos_enc[:, 1], label='Dimensão 1 (cosseno)')
+    ax.set_title("Padrão senoidal das primeiras dimensões do Positional Encoding")
+    ax.set_xlabel("Posição do token")
+    ax.legend()
+    st.pyplot(fig)
+
+    # Pergunta com opção errada como default
     opcoes = [
-        "A importância semântica de cada palavra",
+        "A importância semântica de cada palavra",  # <- selecionada por padrão
         "A ordem e a distância entre os tokens",
         "A classe gramatical de cada palavra",
         "A frequência com que o token aparece nos dados"
     ]
 
-    resposta = st.radio("Escolha a alternativa correta:", options=["⬇️ Selecione uma opção"] + opcoes, key="fase4_radio")
+    resposta = st.radio("O que o Positional Encoding ajuda o modelo a entender?", options=opcoes, index=0, key="fase4_radio")
 
-    if resposta != "⬇️ Selecione uma opção":
+    if resposta:
         if resposta == "A ordem e a distância entre os tokens":
             st.success("✅ Correto! O Positional Encoding insere informação de posição para que o modelo saiba 'onde' cada token está.")
             if st.button("Avançar para Fase 5 ➡️", key="p4_advance_button"):
