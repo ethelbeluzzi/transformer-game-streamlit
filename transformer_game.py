@@ -498,22 +498,20 @@ def main_menu():
     st.title("🚀 A Jornada do Transformer: Atenção Desvendada! 🚀")
 
     st.write("""
-Esse é um jogo interativo pensado para ajudar você a revisar e compreender, de forma leve e prática, os principais conceitos do paper *Attention is All You Need* — um marco fundamental na história dos modelos de linguagem baseados em atenção.  
-[Leia o paper original](https://arxiv.org/abs/1706.03762)
+Esse é um jogo interativo pensado para ajudar você a revisar, de forma leve e engajada, os principais conceitos do paper clássico *Attention is All You Need*. [Leia o paper original](https://arxiv.org/abs/1706.03762). Vamos lá?
 
-📚 Ao longo de cinco fases, você vai explorar os elementos essenciais da arquitetura Transformer:  
-Encoder-Decoder, Atenção Escalonada, Multi-Head Attention, Positional Encoding e Eficiência de Treinamento.
+Durante o jogo, você será guiado por cinco fases, cada uma com um mini-desafio sobre aspectos fundamentais do Transformer: arquitetura, atenção escalonada, atenção multi-cabeça, codificação posicional e resultados de desempenho.
 
-🧠 Precisa de ajuda durante o jogo? Use a barrinha lateral para tirar dúvidas diretamente com um LLM!  
-
-🐞 Encontrou algo estranho ou cometeu um erro conceitual? Utilize a caixinha de feedback na lateral para nos avisar.
-
-Vamos lá? Clique abaixo para iniciar sua missão!
+No canto lateral esquerdo, você pode:
+- ❓ Consultar uma **LLM integrada** sempre que tiver dúvidas sobre os conceitos apresentados.
+- 🐞 Usar a **caixinha de feedback** para reportar erros conceituais ou sugerir melhorias a qualquer momento.
     """)
-    try:
-        st.image("img/transformer.png", width=200)
-    except:
-        st.warning("Imagem não encontrada.")
+
+    # 🔽 Centralizar imagem com layout de colunas
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image("img/transformer.png", use_column_width=True)
+
     if st.button("Iniciar Missão ➡️"):
         st.session_state.game_state = "phase1"
         st.rerun()
